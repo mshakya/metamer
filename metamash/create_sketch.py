@@ -20,6 +20,7 @@ class CreateReadSketches(Task):
     seed = IntParameter() # seed
     min_copy = IntParameter() # minimum occurence of k-mer to be included
     out_dir = Parameter() # directory where all files are copied and kept
+    # prefix = Parameter() # prefix of the output sketch
 
 
     def output(self):
@@ -42,9 +43,13 @@ class CreateReadSketches(Task):
     def sketch_pair(self):
         """create sketch"""
         out_file = self.cat_pair()
+        print(os.path.join(self.out_dir, out_file))
+        print(os.path.join(self.out_dir, out_file))
+        print(os.path.join(self.out_dir, out_file))
+        print(os.path.join(self.out_dir, out_file))
         sketch_cmd = ["sketch", "-k", self.kmer, "-p",
                       self.threads, "-s", self.sketch, "-S", self.seed,
-                      "-r", "-m", self.min_copy,
+                      "-r", "-m", self.min_copy, "-o", os.path.join(self.out_dir, self.smp), 
                       os.path.join(self.out_dir, out_file)]
         mash[sketch_cmd]()
 
