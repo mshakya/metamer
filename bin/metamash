@@ -59,13 +59,13 @@ samples
 
     parser.add_argument('--version', action='version', version='%(prog)s 0.0.0')
     parser.add_argument("-k", dest="KMER", help="""k-mer size to set.""",
-                        required=False, default=1)
+                        required=False, default=21)
     parser.add_argument("-e", dest="SEED", help="""seed to set.""",
                         required=False, default=547)
     parser.add_argument("-n", dest="MIN", help="""minimum number of copy.""",
                         required=False, default=2)
     parser.add_argument("-s", dest="SKETCH", help="""sketch size""", required=False,
-                        default=21)
+                        default=1000)
 
     return parser
 
@@ -89,14 +89,14 @@ def main():
     for sample, fastq in fq_dt.items():
         if len(fastq) > 1:
             build([create_sketch.CreateReadSketches(read1=os.path.join(args.WORKDIR, fastq[0]),
-                                             read2=os.path.join(args.WORKDIR, fastq[1]),
-                                             smp=sample,
-                                             kmer=args.KMER,
-                                             threads=args.THREADS,
-                                             sketch=args.SKETCH,
-                                             seed=args.SEED,
-                                             min_copy=args.MIN,
-                                             out_dir=args.WORKDIR)],
+                                                    read2=os.path.join(args.WORKDIR, fastq[1]),
+                                                    smp=sample,
+                                                    kmer=args.KMER,
+                                                    threads=args.THREADS,
+                                                    sketch=args.SKETCH,
+                                                    seed=args.SEED,
+                                                    min_copy=args.MIN,
+                                                    out_dir=args.WORKDIR)],
             local_scheduler = True, workers=1)
             print(args.WORKDIR)
             build([calc_dist.CalculateDist(threads=args.THREADS,

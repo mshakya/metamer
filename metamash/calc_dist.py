@@ -8,6 +8,7 @@ from pathlib import Path
 import sys
 import os
 import itertools
+import re
 
 
 
@@ -27,6 +28,9 @@ class CalculateDist(Task):
                 dist_cmd = ["dist", "-p", self.threads, str(skch[0]),
                              str(skch[1])]
                 dist_info = mash[dist_cmd]()
+                dist_info = dist_info.replace(self.sk_dir, "")
+                dist_info = re.sub('\.fastq','', dist_info)
+                dist_info = re.sub('\.gz','', dist_info)
                 file.write(dist_info)
 
     def run(self):
