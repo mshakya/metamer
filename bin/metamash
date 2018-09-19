@@ -66,6 +66,8 @@ samples
                         required=False, default=2)
     parser.add_argument("-s", dest="SKETCH", help="""sketch size""", required=False,
                         default=1000)
+    parser.add_argument("-o", dest="OUT_FOLDER", help="""folder to keep all output files""", required=False,
+                        default=.)
 
     return parser
 
@@ -82,6 +84,7 @@ def main():
     # Getting absolute path of some directories
     workdir = os.path.abspath(args.WORKDIR)
     bindir = os.path.abspath(os.path.join(dir_path, '..', 'bin'))
+    out_dir = os.path.abspath(args.OUT_FOLDER)
     os.environ['PATH'] = os.environ['PATH'] + ":" + bindir
     
     fq_dt = parse_metainput.parse_meta(args.META)
@@ -98,10 +101,9 @@ def main():
                                                     min_copy=args.MIN,
                                                     out_dir=args.WORKDIR)],
             local_scheduler = True, workers=1)
-            print(args.WORKDIR)
             build([calc_dist.CalculateDist(threads=args.THREADS,
                                             sk_dir=args.WORKDIR,
-                                            out_file="test.txt")],
+                                            out_file=os.path.join(out_dir, "test.txt"))],
             local_scheduler = True, workers=1)
 
 

@@ -24,7 +24,6 @@ class CalculateDist(Task):
         skch_files = [x for x in Path(self.sk_dir).glob('**/*') if x.suffix == ".msh"]
         with open(self.out_file, 'w') as file:
             for skch in itertools.combinations(skch_files, 2):
-                print(skch)
                 dist_cmd = ["dist", "-p", self.threads, str(skch[0]),
                              str(skch[1])]
                 dist_info = mash[dist_cmd]()
