@@ -85,25 +85,27 @@ def main():
     workdir = os.path.abspath(args.WORKDIR)
     bindir = os.path.abspath(os.path.join(dir_path, '..', 'bin'))
     out_dir = os.path.abspath(args.OUT_FOLDER)
+    if not os.path.exists(out_dir):
+        os.makedirs(out_dir)
     os.environ['PATH'] = os.environ['PATH'] + ":" + bindir
-    
+  
     fq_dt = parse_metainput.parse_meta(args.META)
 
     for sample, fastq in fq_dt.items():
         if len(fastq) > 1:
-            build([create_sketch.CreateReadSketches(read1=os.path.join(args.WORKDIR, fastq[0]),
-                                                    read2=os.path.join(args.WORKDIR, fastq[1]),
+            build([create_sketch.CreateReadSketches(read1=os.path.join(workdir, fastq[0]),
+                                                    read2=os.path.join(workdir, fastq[1]),
                                                     smp=sample,
                                                     kmer=args.KMER,
                                                     threads=args.THREADS,
                                                     sketch=args.SKETCH,
                                                     seed=args.SEED,
                                                     min_copy=args.MIN,
-                                                    out_dir=args.WORKDIR)],
+                                                    out_dir=workdir)],
             local_scheduler = True, workers=1)
             build([calc_dist.CalculateDist(threads=args.THREADS,
-                                            sk_dir=args.WORKDIR,
-                                            out_file=os.path.join(out_dir, "test.txt"))],
+                                            sk_dir=workdir,
+                                            out_file=os.path.join(out_dir, "dist.txt"))],
             local_scheduler = True, workers=1)
 
 
