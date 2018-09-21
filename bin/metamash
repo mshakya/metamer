@@ -103,7 +103,18 @@ def main():
                                                     min_copy=args.MIN,
                                                     out_dir=workdir)],
             local_scheduler = True, workers=1)
-            build([calc_dist.CalculateDist(threads=args.THREADS,
+        elif len(fastq) == 1:
+            build([create_sketch.CreateReadSketches(read1=str(os.path.join(workdir, fastq[0])),
+                                                    read2=None,
+                                                    smp=sample,
+                                                    kmer=args.KMER,
+                                                    threads=args.THREADS,
+                                                    sketch=args.SKETCH,
+                                                    seed=args.SEED,
+                                                    min_copy=args.MIN,
+                                                    out_dir=workdir)],
+            local_scheduler = True, workers=1)
+        build([calc_dist.CalculateDist(threads=args.THREADS,
                                             sk_dir=workdir,
                                             out_file=os.path.join(out_dir, "dist.txt"))],
             local_scheduler = True, workers=1)
