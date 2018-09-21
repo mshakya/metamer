@@ -30,26 +30,31 @@ class CreateReadSketches(Task):
     def cat_pair(self):
         """concatenate fastq files"""
         if str(self.read1).split(".")[-1] == "gz":
-            out_file = self.smp + ".fastq.gz"
+            cat_file = self.smp + ".fastq.gz"
         elif str(self.read1).split(".")[-1] == "fastq":
-            out_file = self.smp + ".fastq"
+            cat_file = self.smp + ".fastq"
         else:
             sys.exit("Your input raw reads not fastq, it needs fastq.gz or fastq extension") 
         cat_cmd = [self.read1, self.read2]
-        (cat[cat_cmd] > out_file)()
-        mv[out_file, self.out_dir]()
-        return out_file
+        (cat[cat_cmd] > cat_file)()
+        mv[cat_file, self.out_dir]()
+        return cat_file
 
     def sketch_pair(self):
         """create sketch"""
-        out_file = self.cat_pair()
+        if self.read2 is None:
+            cat_file = self.read1
+        else:
+            cat_file = self.cat_pair()
         sketch_cmd = ["sketch", "-k", self.kmer, "-p",
                       self.threads, "-s", self.sketch, "-S", self.seed,
                       "-r", "-m", self.min_copy, "-o", os.path.join(self.out_dir, self.smp), 
-                      os.path.join(self.out_dir, out_file)]
+                      os.path.join(self.out_dir, cat_file)]
         mash[sketch_cmd]()
 
     def run(self):
         """luigi run"""
-        self.cat_pair()
+        # self.cat_pair()
         self.sketch_pair()
+
+

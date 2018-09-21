@@ -88,13 +88,13 @@ def main():
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
     os.environ['PATH'] = os.environ['PATH'] + ":" + bindir
-  
+
     fq_dt = parse_metainput.parse_meta(args.META)
 
     for sample, fastq in fq_dt.items():
         if len(fastq) > 1:
-            build([create_sketch.CreateReadSketches(read1=os.path.join(workdir, fastq[0]),
-                                                    read2=os.path.join(workdir, fastq[1]),
+            build([create_sketch.CreateReadSketches(read1=str(os.path.join(workdir, fastq[0])),
+                                                    read2=str(os.path.join(workdir, fastq[1])),
                                                     smp=sample,
                                                     kmer=args.KMER,
                                                     threads=args.THREADS,
