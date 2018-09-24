@@ -37,7 +37,7 @@ class CreateReadSketches(Task):
             sys.exit("Your input raw reads not fastq, it needs fastq.gz or fastq extension") 
         cat_cmd = [self.read1, self.read2]
         (cat[cat_cmd] > cat_file)()
-        # mv[cat_file, self.out_dir]()
+        mv[cat_file, self.out_dir]()
         return cat_file
 
     def sketch_pair(self):
@@ -48,7 +48,14 @@ class CreateReadSketches(Task):
             cat_file = self.cat_pair()
         sketch_cmd = ["sketch", "-k", self.kmer, "-p",
                       self.threads, "-s", self.sketch, "-S", self.seed,
-                      "-r", "-m", self.min_copy, "-o", os.path.join(self.out_dir, self.smp), 
+                      "-r", "-m", self.min_copy, "-o", os.path.join(self.out_dir,
+                                                                    self.smp +
+                                                                    "_k" +
+                                                                    str(self.kmer) +
+                                                                    "_ss" +
+                                                                    str(self.sketch) +
+                                                                    "_sd" +
+                                                                    str(self.seed)), 
                       os.path.join(self.out_dir, cat_file)]
         mash[sketch_cmd]()
 
