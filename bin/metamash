@@ -12,6 +12,7 @@ import os
 import sys
 import argparse
 import luigi
+import itertools
 dir_path = os.path.dirname(os.path.realpath(__file__))
 lib_path = os.path.abspath(os.path.join(dir_path, '..'))
 bin_path = os.path.join(lib_path, 'bin')
@@ -114,10 +115,27 @@ def main():
                                                     min_copy=args.MIN,
                                                     out_dir=workdir)],
             local_scheduler = True, workers=1)
-        build([calc_dist.CalculateDist(threads=args.THREADS,
-                                            sk_dir=workdir,
+
+    all_samples = [sample for sample, fastq in fq_dt.items()]
+    for skch in itertools.combinations(all_samples, 2):
+        build([calc_dist.CalculateDist(sk1=os.path.join(workdir, skch[0] +
+                                                            "_k" + str(args.KMER) +
+                                                            "_ss" + str(args.SKETCH) +
+                                                            "_sd" + str(args.SEED) +
+                                                            ".msh"),
+                                           sk2=os.path.join(workdir, skch[1] +
+                                                            "_k" + str(args.KMER) +
+                                                            "_ss" + str(args.SKETCH) +
+                                                            "_sd" + str(args.SEED) +
+                                                            ".msh"),
+                                           threads=args.THREADS,
+                                            # sk_dir=workdir,
                                             out_file=os.path.join(out_dir, "dist.txt"))],
             local_scheduler = True, workers=1)
+        # build([calc_dist.CalculateDist(threads=args.THREADS,
+        #                                     sk_dir=workdir,
+        #                                     out_file=os.path.join(out_dir, "dist.txt"))],
+        #     local_scheduler = True, workers=1)
 
 
 

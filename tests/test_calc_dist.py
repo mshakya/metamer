@@ -23,7 +23,8 @@ def test_CalculateDist(tmpdir):
 
     """
 
-    luigi.interface.build([calc_dist.CalculateDist(sk_dir="tests/data/",
+    luigi.interface.build([calc_dist.CalculateDist(sk1="tests/data/test_SRS104275_1.fastq.msh",
+                                                   sk2="tests/data/test_SRS144382_1.fastq.gz.msh",
                                                    threads=2,
                                                    out_file=os.path.join(tmpdir, "test_matrix.txt"))],
                           local_scheduler=True, workers=1)

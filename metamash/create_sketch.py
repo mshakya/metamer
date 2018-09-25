@@ -1,11 +1,12 @@
 #! /usr/bin/env
 
 from luigi import Task
-from luigi import IntParameter, Parameter
-from luigi import LocalTarget
+from luigi import IntParameter, Parameter, LocalTarget
+from luigi.util import requires
 from plumbum.cmd import mash, cat, mv
 import sys
 import os
+
 
 
 
@@ -24,8 +25,11 @@ class CreateReadSketches(Task):
 
 
     def output(self):
-        """to check if smp.msh is present"""
-        LocalTarget(self.smp + ".msh")
+        """to check if msh is present"""
+        out_file = os.path.join(self.out_dir, self.smp + "_k" + str(self.kmer) + "_ss" +
+            str(self.sketch) + "_sd" + str(self.seed))
+
+        LocalTarget(out_file + ".msh")
 
     def cat_pair(self):
         """concatenate fastq files"""
