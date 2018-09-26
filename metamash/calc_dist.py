@@ -16,10 +16,12 @@ class CalculateDist(Task):
     """luigi class for calculating mash distance between two sketches."""
     sk1 = Parameter()
     sk2 = Parameter()
-    # sk_dir = Parameter() # Folder that has .msh files
     threads = IntParameter() # # of threads to trigger
     out_file = Parameter() # files are copied and kept
 
+
+    def requires(self):
+        LocalTarget(self.sk1)
 
     def calc_dist(self):
         """calculate distance sketch"""
