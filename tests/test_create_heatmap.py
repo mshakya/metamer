@@ -10,7 +10,7 @@ lib_path = os.path.abspath(os.path.join(dir_path, '..'))
 bin_path = os.path.join(lib_path, 'bin')
 sys.path.append(lib_path)
 os.environ["PATH"] += os.pathsep + bin_path
-from metamash import create_heatmap, process_dist
+from metamash import create_heatmap, process_dist, create_sns_heatmap
 
 
 def test_create_heatmap():
@@ -19,7 +19,11 @@ def test_create_heatmap():
     """
 
     mtx = process_dist.conv_matrix("test.txt")
+    print(mtx)
     create_heatmap.create_heatmap(mtx, x=["A", "B"], y=["C", "D"], title="test",
     							  out_file="foo.png")
+
+    hmap = create_sns_heatmap("test.txt")
+    hmap.savefig("foo.png")
 
     assert os.path.exists("foo.png") is True

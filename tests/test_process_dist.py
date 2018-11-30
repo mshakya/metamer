@@ -20,5 +20,4 @@ def test_process_dist():
 
     mtx = process_dist.conv_matrix("test.txt")
     len_mtx = print(len(mtx))
-    print(mtx)
     assert len_mtx==None
