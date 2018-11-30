@@ -9,6 +9,7 @@ def conv_matrix(md):
 	dmc = mdf[['m1','m2', 'dist']]
 	dm = dmc.pivot(index='m1', columns='m2', values='dist')
 	dm = dm.values
-	print(dm)
 	# dm = pd.DataFrame( dmc.iloc['dist'], )
 	return dm
+
+

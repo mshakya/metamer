@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
 # sphinx_gallery_thumbnail_number = 2
 
 
@@ -8,6 +10,9 @@ import matplotlib.pyplot as plt
 
 def create_heatmap(dist, x, y, title, out_file):
 	"""read in the dataframe and create heatmap."""
+
+	print(dist)
+
 	fig, ax = plt.subplots()
 	im = ax.imshow(dist)
 
@@ -34,3 +39,12 @@ def create_heatmap(dist, x, y, title, out_file):
 	plt.savefig(out_file)
 
 
+def create_sns_heatmap(dist_file):
+	mash_df = pd.read_csv(dist_file, sep="\t", header=None)
+	print(mash_df)
+	upper_dist_df = mash_df.pivot(0, 1, 2).fillna(0)
+	print(upper_dist_df)
+	lower_dist_df = mash_df.pivot(0, 1, 2).transpose().fillna(0)
+	dist_df = upper_dist_df + lower_dist_df
+	cl_map = sns.clustermap(dist_df)
+	return cl_map

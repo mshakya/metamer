@@ -69,7 +69,6 @@ samples
                         default=1000)
     parser.add_argument("-o", dest="OUT_FOLDER", help="""folder to keep all output files""", required=False,
                         default=".")
-
     return parser
 
 
@@ -117,7 +116,9 @@ def main():
             local_scheduler = True, workers=1)
 
     all_samples = [sample for sample, fastq in fq_dt.items()]
-    for skch in itertools.combinations(all_samples, 2):
+    for skch in itertools.combinations_with_replacement(all_samples, 2):
+        print(skch)
+        print("urshula")
         build([calc_dist.CalculateDist(sk1=os.path.join(workdir, skch[0] +
                                                             "_k" + str(args.KMER) +
                                                             "_ss" + str(args.SKETCH) +
