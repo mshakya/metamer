@@ -6,7 +6,7 @@ from luigi.util import requires
 from plumbum.cmd import mash, cat, mv
 import sys
 import os
-
+import logging
 
 
 
@@ -21,6 +21,7 @@ class CreateReadSketches(Task):
     seed = IntParameter() # seed
     min_copy = IntParameter() # minimum occurence of k-mer to be included
     out_dir = Parameter() # directory where all files are copied and kept
+    fq_dir = Parameter() # directory where fastq files are found
     # prefix = Parameter() # prefix of the output sketch
 
 
@@ -46,21 +47,19 @@ class CreateReadSketches(Task):
 
     def sketch_pair(self):
         """create sketch"""
+        logger = logging.getLogger('luigi-interface') # setup logger
         if self.read2 is None:
-            cat_file = self.read1
+            sketch_cmd = ["sketch", "-k", self.kmer, "-p", self.threads, "-s", self.sketch, "-S", self.seed,
+                          "-r", "-m", self.min_copy, 
+                          "-o", os.path.join(self.out_dir, self.smp + "_k" + str(self.kmer) + "_ss" + str(self.sketch) + "_sd" + str(self.seed)), 
+                      os.path.join(self.fq_dir, self.read1)]
         else:
-            cat_file = self.cat_pair()
-        sketch_cmd = ["sketch", "-k", self.kmer, "-p",
-                      self.threads, "-s", self.sketch, "-S", self.seed,
-                      "-r", "-m", self.min_copy, "-o", os.path.join(self.out_dir,
-                                                                    self.smp +
-                                                                    "_k" +
-                                                                    str(self.kmer) +
-                                                                    "_ss" +
-                                                                    str(self.sketch) +
-                                                                    "_sd" +
-                                                                    str(self.seed)), 
-                      os.path.join(self.out_dir, cat_file)]
+            sketch_cmd = ["sketch", "-k", self.kmer, "-p", self.threads, "-s", self.sketch, "-S", self.seed,
+                          "-r", "-m", self.min_copy,
+                          "-o", os.path.join(self.out_dir, self.smp + "_k" + str(self.kmer) + "_ss" + str(self.sketch) +
+                                             "_sd" + str(self.seed)), 
+                      os.path.join(self.fq_dir, self.read1), os.path.join(self.fq_dir, self.read2)]
+        logger.info(mash[sketch_cmd]())
         mash[sketch_cmd]()
 
     def run(self):
