@@ -49,8 +49,8 @@ samples
 
     required_args = parser.add_argument_group('required arguments')
 
-    required_args.add_argument("-d", dest="WORKDIR", help="""working directory where all
-        output files will be processed and written""", required=True)
+    required_args.add_argument("-d", dest="WORKDIR", help="""directory where all
+        fastq files are""", required=True)
 
     required_args.add_argument("-m", dest="META", help="""tab delimited meta
         data file""", required=True, default=argparse.SUPPRESS)
@@ -97,25 +97,25 @@ def main():
                                                     read2=str(os.path.join(workdir, fastq[1])),
                                                     smp=sample,
                                                     kmer=args.KMER,
-                                                    threads=args.THREADS,
+                                                    threads=1,
                                                     sketch=args.SKETCH,
                                                     seed=args.SEED,
                                                     min_copy=args.MIN,
                                                     out_dir=out_dir,
                                                     fq_dir=workdir)],
-            local_scheduler = True, workers=1)
+            local_scheduler = True, workers=args.THREADS)
         elif len(fastq) == 1:
             build([create_sketch.CreateReadSketches(read1=str(os.path.join(workdir, fastq[0])),
                                                     read2=None,
                                                     smp=sample,
                                                     kmer=args.KMER,
-                                                    threads=args.THREADS,
+                                                    threads=1,
                                                     sketch=args.SKETCH,
                                                     seed=args.SEED,
                                                     min_copy=args.MIN,
                                                     out_dir=out_dir,
                                                     fq_dir=workdir)],
-            local_scheduler = True, workers=1)
+            local_scheduler = True, workers=args.THREADS)
 
     all_samples = [sample for sample, fastq in fq_dt.items()]
     for skch in itertools.combinations_with_replacement(all_samples, 2):
