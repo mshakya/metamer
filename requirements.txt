@@ -4,3 +4,4 @@ timeit
 seaborn
 matplotlib
 pandas
+pathlib
