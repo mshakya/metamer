@@ -1,4 +1,5 @@
 import pandas as pd
+
 # from scipy.spatial.distance import squareform, pdist
 
 
@@ -11,5 +12,3 @@ def conv_matrix(md):
 	dm = dm.values
 	# dm = pd.DataFrame( dmc.iloc['dist'], )
 	return dm
-
-
