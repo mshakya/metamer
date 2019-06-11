@@ -1,0 +1,20 @@
+language: python
+sudo: false
+
+python:
+  - "3.6.4"
+
+services:
+  - docker
+
+before_install:
+  - docker pull migun/piret
+  - docker run -d -p 127.0.0.1:80:4567 migun/piret /bin/sh -c "samtools --help;"
+  - docker ps -a
+  - docker run migun/piret /bin/sh -c "cd /root; git clone https://github.com/mshakya/piret.git; cd /root/piret/; python setup.py install; pytest --cov=./; mv coverage.txt shared"
+
+# script:
+#   - pytest --cov=./
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
