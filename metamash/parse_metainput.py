@@ -12,4 +12,3 @@ def parse_meta(in_meta):
     meta_df = pd.read_csv(in_meta, sep="\t")
     meta_dict = {k: list(v) for k, v in meta_df.groupby("Sample")["reads"]}
     return meta_dict
-
