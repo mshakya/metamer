@@ -23,10 +23,7 @@ def test_CreateReadSketches(tmpdir):
     test for creating sketches
 
     """
-    read1 = "tests/data/test_SRS104275_1.fastq"
-    read2 = "tests/data/test_SRS104275_2.fastq"
-    read3 = "tests/data/test_SRS144382_1.fastq.gz"
-    read4 = "tests/data/test_SRS144382_1.fastq.gz"
+    d_foler = "tests/data/"
     cp_read1 = [read1, tmpdir + "/read1.fastq"]
     cp_read2 = [read2, tmpdir + "/read2.fastq"]
     cp[cp_read1]()
