@@ -1,3 +1,7 @@
 *.pyc
 *.png
 *.msh
+*.fastq
+*stats.txt
+*report.pdf
+.DS_Store
