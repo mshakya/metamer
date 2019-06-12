@@ -7,14 +7,14 @@ from plumbum.cmd import mash, cat, mv
 import sys
 import os
 import logging
+from miscs import f2dic
 
 
 class CreateReadSketches(Task):
     """luigi class for creating sketches of fastq reads."""
     data_folder = Parameter()  # folder that has fastq files (.fastq.gz)
-    smp = Parameter()  # name of the sample
     kmer = IntParameter()  # k-mer size
-    threads = IntParameter()  # # of threads to trigger
+    threads = IntParameter()  # of threads to trigger
     sketch = IntParameter()  # sketch size
     seed = IntParameter()  # seed
     min_copy = IntParameter()  # minimum occurence of k-mer to be included
@@ -47,6 +47,8 @@ class CreateReadSketches(Task):
     def sketch_pair(self):
         """create sketch"""
         logger = logging.getLogger('luigi-interface')  # setup logger
+        # copy all files to one temporary folder
+        os.mkdir(os.path.join(self.workdir))
         if self.mash_tool == "mash":
             sketch_cmd = ["sketch", "-k", self.kmer, "-p", self.threads,
                           "-s", self.sketch, "-S", self.seed,
