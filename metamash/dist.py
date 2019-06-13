@@ -1,6 +1,7 @@
 #! /usr/bin/env
 
 from luigi import IntParameter, Parameter, ListParameter, LocalTarget, Task
+from luigi import WrapperTask
 from luigi.util import requires
 from plumbum.cmd import mash, cat, mv
 from pathlib import Path
@@ -11,14 +12,12 @@ import re
 from metamash import create_sketch
 
 
-# @requires(create_sketch.CreateReadSketches)
 class CalculateDist(Task):
     """luigi class for calculating mash distance between two sketches."""
     sk1 = Parameter()
     sk2 = Parameter()
-    threads = IntParameter() # # of threads to trigger
-    out_file = Parameter() # files are copied and kept
-
+    threads = IntParameter()  # # of threads to trigger
+    out_file = Parameter()  # files are copied and kept
 
     def requires(self):
         LocalTarget(self.sk1)
@@ -43,3 +42,20 @@ class CalculateDist(Task):
     def output(self):
         """output"""
         LocalTarget(self.out_file)
+
+
+class Alldist(WrapperTask):
+    data_folder = Parameter()
+    threads = IntParameter()  # of threads to trigger
+    out_table = Parameter()  # Table file with all comparisons
+    mash_tool = Parameter()  # sourmash or mash
+
+    def requires(self):
+        """A wrapper for running sketches."""
+        sk_list = sk2list(self.data_folder)
+        if os.path.exists(self.out_dir) is False:
+            os.mkdir(os.path.join(self.out_dir))
+        all_pairs = list(itertools.combinations(sk_list, 2))
+        for pair in all_pairs:
+            yield CalculateDist(sk1=pair[0], sk2=pair[1], threads=self.threads,
+                                out_file=)
