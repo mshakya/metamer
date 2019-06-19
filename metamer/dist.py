@@ -1,7 +1,7 @@
 #! /usr/bin/env
 
 from luigi import IntParameter, Parameter, ListParameter, LocalTarget, Task
-from luigi import WrapperTask
+import luigi
 from luigi.util import requires
 from plumbum.cmd import mash, cat, mv
 from pathlib import Path
@@ -9,7 +9,7 @@ import sys
 import os
 import itertools
 import re
-from metamer import sketch, miscs
+from metamer import sketch, miscs, faqcs
 
 
 class CalculateDist(Task):
@@ -27,12 +27,12 @@ class CalculateDist(Task):
         with open(self.out_file, 'a+') as file:
             dir_name = os.path.dirname(self.sk1)
             dist_cmd = ["dist", "-p", self.threads, str(self.sk1),
-                             str(self.sk2)]
+                        str(self.sk2)]
             dist_info = mash[dist_cmd]()
             dist_info = dist_info.replace(dir_name, "")
             dist_info = dist_info.replace("/", "")
-            dist_info = re.sub('\.fastq','', dist_info)
-            dist_info = re.sub('\.gz','', dist_info)
+            dist_info = re.sub('\.fastq', '', dist_info)
+            dist_info = re.sub('\.gz', '', dist_info)
             file.write(dist_info)
 
     def run(self):
@@ -41,20 +41,20 @@ class CalculateDist(Task):
 
     def output(self):
         """output"""
-        LocalTarget(self.out_file)
+        # return faqcs.RefFile(self.out_file)
+        return LocalTarget(self.out_file)
 
 
-class Alldist(WrapperTask):
-    data_folder = Parameter()
+class Alldist(luigi.WrapperTask):
+    "Run all Comparisons"
+    data_folder = Parameter()  # folder that has sketch files
     threads = IntParameter()  # of threads to trigger
     out_table = Parameter()  # Table file with all comparisons
     mash_tool = Parameter()  # sourmash or mash
 
     def requires(self):
-        """A wrapper for running sketches."""
+        """A wrapper for comparing sketches."""
         sk_list = miscs.sk2list(self.data_folder)
-        # if os.path.exists(self.out_dir) is False:
-            # os.mkdir(os.path.join(self.out_dir))
         all_pairs = list(itertools.combinations(sk_list, 2))
         for pair in all_pairs:
             yield CalculateDist(sk1=pair[0], sk2=pair[1], threads=self.threads,
