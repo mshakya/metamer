@@ -6,3 +6,4 @@
 *report.pdf
 .DS_Store
 build/*.*
+build/lib/*
