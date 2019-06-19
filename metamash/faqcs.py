@@ -14,6 +14,7 @@ from itertools import chain
 from plumbum.cmd import FaQCs, cat
 import pandas as pd
 import logging
+from miscs import f2dic
 
 
 class RefFile(ExternalTask):
@@ -94,10 +95,7 @@ class RunAllQC(luigi.WrapperTask):
             else:
                 sys.exit("fastq file name should end with R[1-2].fastq or R[1-2].fastq.gz")
         for samp, fastq in fq_dic.items():
-            print(samp)
-            print(fastq)
-            fastq_sort = sorted(fastq)
-            print(fastq_sort)
+            fastq_sort = sorted(fastq)  # sort, so that R1 comes before R2
             trim_dir = os.path.join(self.workdir, "qcs", samp)
             if os.path.isdir(trim_dir) is False:
                 os.makedirs(trim_dir)
@@ -107,4 +105,3 @@ class RunAllQC(luigi.WrapperTask):
                               qc_outdir=trim_dir,
                               faqc_min_L=self.faqc_min_L,
                               n_cutoff=self.n_cutoff)
-

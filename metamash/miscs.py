@@ -14,7 +14,7 @@ def f2dic(fq_folder):
     for file in [os.path.abspath(os.path.join(fq_folder, x)) for x in os.listdir(fq_folder)]:
         if file.lower().endswith(".fastq") is True or str(file).lower().endswith(".fastq.gz") is True:
             fq_list.append(file)
-    fq_list.sort() # sort so that first element in the list is R1
+    fq_list.sort()  # sort so that first element in the list is R1
     for file in fq_list:
         if any([regexp1.match(f) for f in fq_list]) is True:
             samp_name = re.search('.*_', file).group(0).split("/")[-1]
@@ -25,3 +25,14 @@ def f2dic(fq_folder):
         else:
             sys.exit("fastq file name should end with R[1-2].fastq or R[1-2].fastq.gz")
     return fq_dic
+
+
+def sk2list(sk_folder):
+    "list sketch files"
+    sk_list = []
+    regexp1 = re.compile(r'.*\.msh')
+    for file in [os.path.abspath(os.path.join(sk_folder, x)) for x in os.listdir(sk_folder)]:
+        if file.lower().endswith(".msh") is True:
+            sk_list.append(file)
+    sk_list.sort()  # sort so that first element in the list is R1
+    return sk_list
