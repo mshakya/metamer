@@ -2,9 +2,6 @@
 # Base Docker Image
 FROM continuumio/miniconda3
 
-# Maintainer
-MAINTAINER Migun Shakya, migun@lanl.gov
-
 # Update the system
 RUN apt-get -y update
 RUN apt-get -y install build-essential git-all wget
