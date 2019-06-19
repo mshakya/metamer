@@ -20,7 +20,7 @@ before_install:
 install:
   - conda create --yes -n mash_env python=$TRAVIS_PYTHON_VERSION
   - source activate mash_env
-  - conda install -c bioconda mash -n mash_env
+  - conda install --yes -c bioconda mash -n mash_env
   - pip install codecov
   - pip install pytest pytest-cov
   - python setup.py install
