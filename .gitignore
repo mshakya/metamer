@@ -5,3 +5,4 @@
 *stats.txt
 *report.pdf
 .DS_Store
+build/*.*
