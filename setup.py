@@ -18,6 +18,7 @@ setup(
         "luigi >= 2.7.5",
         "plumbum >= 1.6.6",
         "pandas >= 0.23.4",
-        "pathlib >= 1.0.1"
+        "pathlib >= 1.0.1",
+        "matplotlib >= 3.1.0"
     ],
 )
