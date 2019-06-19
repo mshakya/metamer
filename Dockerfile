@@ -8,6 +8,5 @@ RUN apt-get -y install build-essential git-all wget
 RUN apt-get clean
 
 # install all piret dependencies
-RUN conda install -c bioconda mash=2.1.1-0
+RUN conda install -c bioconda mash
 RUN conda install -c bioconda faqcs
-RUN conda install -c bioconda sourmash=2.0.1-0
