@@ -19,8 +19,10 @@ before_install:
 # Install the codecov pip dependency
 install:
   - conda create --yes -n mash_env python=$TRAVIS_PYTHON_VERSION
-  - source activate mash_env
   - conda install --yes -c bioconda mash faqcs -n mash_env
+  - source activate mash_env
+  - mash --version
+  - mash sketch -h
   - pip install codecov
   - pip install pytest pytest-cov
   - python setup.py install
