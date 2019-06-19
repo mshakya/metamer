@@ -31,8 +31,6 @@ def test_CalculateDist(tmpdir):
                                         out_table="tests/test_table.txt", mash_tool="mash")],
                           local_scheduler=True, workers=1)
 
-    file_basenames = [os.path.basename(x) for x in tmpdir.listdir()] 
-    print(file_basenames)
     file_exist = os.path.exists("tests/test_table.txt")
     shutil.rmtree("tests/sk_test")
     assert file_exist is True
