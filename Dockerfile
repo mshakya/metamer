@@ -1,4 +1,4 @@
-# This is the Dockefile to build PiReT (mshakya/PiReT)
+# This is the Dockefile to build metamer (mshakya/metamer)
 # Base Docker Image
 FROM continuumio/miniconda3
 
@@ -7,6 +7,6 @@ RUN apt-get -y update
 RUN apt-get -y install build-essential git-all wget
 RUN apt-get clean
 
-# install all piret dependencies
+# install all metamer dependencies
 RUN conda install -c bioconda mash
 RUN conda install -c bioconda faqcs

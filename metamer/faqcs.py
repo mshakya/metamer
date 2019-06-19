@@ -14,7 +14,7 @@ from itertools import chain
 from plumbum.cmd import FaQCs, cat
 import pandas as pd
 import logging
-from miscs import f2dic
+from metamer.miscs import f2dic
 
 
 class RefFile(ExternalTask):

@@ -9,7 +9,7 @@ import sys
 import os
 import itertools
 import re
-from metamash import sketch
+from metamer import sketch, miscs
 
 
 class CalculateDist(Task):
@@ -52,9 +52,9 @@ class Alldist(WrapperTask):
 
     def requires(self):
         """A wrapper for running sketches."""
-        sk_list = sk2list(self.data_folder)
-        if os.path.exists(self.out_dir) is False:
-            os.mkdir(os.path.join(self.out_dir))
+        sk_list = miscs.sk2list(self.data_folder)
+        # if os.path.exists(self.out_dir) is False:
+            # os.mkdir(os.path.join(self.out_dir))
         all_pairs = list(itertools.combinations(sk_list, 2))
         for pair in all_pairs:
             yield CalculateDist(sk1=pair[0], sk2=pair[1], threads=self.threads,

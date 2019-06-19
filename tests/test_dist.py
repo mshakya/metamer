@@ -26,8 +26,8 @@ def test_CalculateDist(tmpdir):
                               seed=2500, min_copy=2, out_dir="tests/sk_test",
                               mash_tool="mash")],
                           local_scheduler=True, workers=1)
-    luigi.interface.build([dist.Alldist(data_folder="tests/mds", threads=2,
-                                        out_file="tests/test_table.txt")],
+    luigi.interface.build([dist.Alldist(data_folder="tests/sk_test", threads=2,
+                                        out_table="tests/test_table.txt", mash_tool="mash")],
                           local_scheduler=True, workers=1)
 
     file_basenames = [os.path.basename(x) for x in tmpdir.listdir()] 

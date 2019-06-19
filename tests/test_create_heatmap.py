@@ -18,7 +18,7 @@ def test_create_heatmap():
     Test if the dist output from mash is converted to matrix
     """
 
-    mtx = process_dist.conv_matrix("test.txt")
+    mtx = dist.conv_matrix("test.txt")
     print(mtx)
     create_heatmap.create_heatmap(mtx, x=["A", "B"], y=["C", "D"], title="test",
     							  out_file="foo.png")
