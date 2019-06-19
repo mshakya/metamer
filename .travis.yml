@@ -18,6 +18,9 @@ before_install:
 
 # Install the codecov pip dependency
 install:
+  - conda config --add channels defaults
+  - conda config --add channels bioconda
+  - conda config --add channels conda-forge
   - conda create --yes -n mash_env python=$TRAVIS_PYTHON_VERSION
   - conda install --yes -c bioconda mash=2.1.1 -n mash_env
   - conda install --yes -c bioconda faqcs -n mash_env
