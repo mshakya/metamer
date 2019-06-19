@@ -4,21 +4,23 @@ sudo: false
 python:
   - "3.6.6"
 
+# Install miniconda
+before_install:
+  - wget http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86.sh -O miniconda.sh
+  - chmod +x miniconda.sh
+  - ./miniconda.sh -b
+  - export PATH=/home/travis/miniconda/bin:$PATH
+  - conda update --yes conda
+
 
 # Install the codecov pip dependency
 install:
+  - conda create --yes -n mash python=$TRAVIS_PYTHON_VERSION
+  - source activate mash_env
+  - conda install -c bioconda mash -n mash_env
   - pip install codecov
   - pip install pytest pytest-cov
   - python setup.py install
-
-  # services:
-#   - docker
-
-# before_install:
-#   - docker pull migun/metamash
-#   - docker run -d -p 127.0.0.1:80:4567 migun/piret /bin/sh -c "mash --help;"
-#   - docker ps -a
-#   - docker run migun/metamash /bin/sh -c "cd /root; git clone https://github.com/mshakya/metamash.git; cd /root/piret/; python setup.py install; pytest --cov=./; mv coverage.txt shared"
 
 script:
   - pytest --cov=./
