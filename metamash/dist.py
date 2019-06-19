@@ -9,7 +9,7 @@ import sys
 import os
 import itertools
 import re
-from metamash import create_sketch
+from metamash import sketch
 
 
 class CalculateDist(Task):
@@ -58,4 +58,4 @@ class Alldist(WrapperTask):
         all_pairs = list(itertools.combinations(sk_list, 2))
         for pair in all_pairs:
             yield CalculateDist(sk1=pair[0], sk2=pair[1], threads=self.threads,
-                                out_file=)
+                                out_file=self.out_table)
