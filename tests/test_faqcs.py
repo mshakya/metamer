@@ -6,6 +6,7 @@ import pytest
 import os
 import sys
 import luigi
+import shutil
 dir_path = os.path.dirname(os.path.realpath(__file__))
 lib_path = os.path.abspath(os.path.join(dir_path, '..'))
 bin_path = os.path.join(lib_path, 'bin')
@@ -27,4 +28,5 @@ def test_faqcs():
                                           n_cutoff=4)],
                           local_scheduler=True, workers=1)
     file_exist = os.path.exists("tests/qc_results/qcs/SRR059451_/SRR059451__qc_report.pdf")
+    shutil.rmtree("tests/qc_results")
     assert file_exist is True
