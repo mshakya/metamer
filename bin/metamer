@@ -35,8 +35,8 @@ def cmdline_parser():
         pass
 
     parser = argparse.ArgumentParser(formatter_class=CustomFormatter,
-                                     prog='runPiReT',
-                                     description="""RNASeq workflow""",
+                                     prog='metamash',
+                                     description="""comparing metagenomes using mash""",
                                      epilog="""
 It requires a metadata table that contains information regarding metagenome
 samples
@@ -55,10 +55,11 @@ samples
     required_args.add_argument("-m", dest="META", help="""tab delimited meta
         data file""", required=True, default=argparse.SUPPRESS)
 
-    # required_args.add_argument("-f", dest="FOLDER", help="""path to folder
-        # with data""", required=True, default=argparse.SUPPRESS)
-
     parser.add_argument('--version', action='version', version='%(prog)s 0.0.0')
+
+    parser.add_argument("-c", dest="CONGIF", help="""config file.""",
+                        required=True)
+
     parser.add_argument("-k", dest="KMER", help="""k-mer size to set.""",
                         required=False, default=21)
     parser.add_argument("-e", dest="SEED", help="""seed to set.""",
@@ -90,6 +91,9 @@ def main():
     os.environ['PATH'] = os.environ['PATH'] + ":" + bindir
 
     fq_dt = parse_metainput.parse_meta(args.META)
+
+
+    
 
     for sample, fastq in fq_dt.items():
         if len(fastq) > 1:
