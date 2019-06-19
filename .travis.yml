@@ -2,7 +2,8 @@ language: python
 sudo: false
 
 python:
-  - "3.6.4"
+  - "3.6.6"
+
 
 # Install the codecov pip dependency
 install:
