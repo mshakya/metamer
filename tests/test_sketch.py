@@ -14,7 +14,7 @@ lib_path = os.path.abspath(os.path.join(dir_path, '..'))
 bin_path = os.path.join(lib_path, 'bin')
 sys.path.append(lib_path)
 os.environ["PATH"] += os.pathsep + bin_path
-from metamash import sketch
+from metamer import sketch
 from plumbum.cmd import cp
 
 

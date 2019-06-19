@@ -10,7 +10,7 @@ lib_path = os.path.abspath(os.path.join(dir_path, '..'))
 bin_path = os.path.join(lib_path, 'bin')
 sys.path.append(lib_path)
 os.environ["PATH"] += os.pathsep + bin_path
-from metamash import create_heatmap, process_dist, create_sns_heatmap
+from metamer import create_heatmap, dist
 
 
 def test_create_heatmap():

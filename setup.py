@@ -1,7 +1,7 @@
 from distutils.core import setup
 
 setup(
-    name='metamash',
+    name='metamer',
     version='0.0.0',
     author='Migun Shakya',
     author_email='migun@lanl.gov',
@@ -9,7 +9,7 @@ setup(
     scripts=['bin/metamer'],
     url='https://github.com/mshakya/metamer',
     license='LICENSE.txt',
-    description='comparing metagenomes using mash',
+    description='a suite that compare metagenomes',
     long_description=open('README.md').read(),
     install_requires=[
         "numpy >= 1.15.1",

@@ -35,7 +35,7 @@ def cmdline_parser():
         pass
 
     parser = argparse.ArgumentParser(formatter_class=CustomFormatter,
-                                     prog='metamash',
+                                     prog='metamer',
                                      description="""comparing metagenomes using mash""",
                                      epilog="""
 It requires a metadata table that contains information regarding metagenome
