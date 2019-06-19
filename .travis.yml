@@ -9,7 +9,7 @@ python:
 install:
   - pip install codecov
   - pip install pytest pytest-cov
-  -  python setup.py -q install
+  - python setup.py install
 
   # services:
 #   - docker
