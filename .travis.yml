@@ -8,13 +8,8 @@ python:
 before_install:
   - wget http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
   - bash miniconda.sh -b
-  - ls /home
-  - ls /home/travis
-  - ls /home/travis/miniconda3/
-  - ls /home/travis/miniconda3/bin
   - export PATH=/home/travis/miniconda3/bin:$PATH
   - conda update --yes conda
-
 
 # Install the codecov pip dependency
 install:
