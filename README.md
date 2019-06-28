@@ -39,6 +39,8 @@ If the installation is succesful, you should be able to type `metamer -h` and ge
 metamer -h
 ```
 
+# HOW TO RUN METAMER?
+
 
 
 # LICENSE
