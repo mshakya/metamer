@@ -78,10 +78,13 @@ class RunAllQC(luigi.WrapperTask):
 
     def requires(self):
         """A wrapper for running the QC."""
+        if os.path.exists(self.workdir) is False:
+            os.path.makedirs(self.workdir)
         fq_list = []
         fq_dic = {}
         regexp1 = re.compile(r'.*R[1-2]\.fastq')
         regexp2 = re.compile(r'.*R[1-2]\.fastq\.gz')
+        print(os.listdir(self.fq_folder))
         for file in [os.path.abspath(os.path.join(self.fq_folder, x)) for x in os.listdir(self.fq_folder)]:
             if file.lower().endswith(".fastq") is True or str(file).lower().endswith(".fastq.gz") is True:
                 fq_list.append(file)

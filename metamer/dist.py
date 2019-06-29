@@ -30,7 +30,7 @@ class CalculateDist(Task):
                         str(self.sk2)]
             dist_info = mash[dist_cmd]()
             dist_info = dist_info.replace(dir_name, "")
-            dist_info = dist_info.replace("/", "")
+            # dist_info = dist_info.replace("/", "")
             dist_info = re.sub('\.fastq', '', dist_info)
             dist_info = re.sub('\.gz', '', dist_info)
             file.write(dist_info)
