@@ -1,6 +1,7 @@
 import pandas as pd
 import sklearn.cluster
 import scipy
+import numpy as np
 
 # from scipy.spatial.distance import squareform, pdist
 
@@ -75,22 +76,71 @@ def plot_hclust(linkage):
     plt.show()
 
 
+
+    # sns.set()
+
+    # plt.figure(figsize=(25, 10))
+    # plt.title('Hierarchical Clustering Dendrogram')
+    # plt.xlabel('sample index')
+    # plt.ylabel('distance')
+    # scipy.cluster.hierarchy.dendrogram(
+    #     linkage,
+    #     leaf_rotation=90.,  # rotates the x axis labels
+    #     leaf_font_size=8.,  # font size for the x axis labels
+    # )
+    # plt.show()
+
 class ClusterSamples(Task):
     """luigi class for clustering mash distance."""
-    dist_file = Parameter()
-    dist_algo = Parameter()
+    out_folder = Parameter()
+    # dist_algo = Parameter()
 
     def requires(self):
         LocalTarget(self.dist_file)
 
+    def get_linkage(dis_file):
+        """A function that clusters."""
+        # An empty data structure.
+        name_to_id = defaultdict(functools.partial(next, itertools.count()))
+
+    # open the file
+    with open(os.path.join(out_folder, "mash_dist.txt")) as f:
+        reader = csv.reader(f, delimiter="\t")
+
+    # do one pass over the file to get all the IDs so we know how 
+    # large to make the matrix, then another to fill in the data.
+    # this takes more time but uses less memory than loading everything
+    # in in one pass, because we don't know how large the matrix is; you
+    # can skip this if you do know the number of elements from elsewhere.
+        for name_a, name_b, dist, p, share in reader:
+            idx_a = name_to_id[name_a]
+            idx_b = name_to_id[name_b]
+
+    # make the (square) distances matrix
+    # this should really be triangular, but the formula for 
+    # indexing into that is escaping me at the moment
+        n_elem = len(name_to_id)
+        dists = np.zeros((n_elem, n_elem))
+
+        # go back to the start of the file and read in the actual data
+        f.seek(0)
+        for name_a, name_b, dist, p, share in reader:
+            idx_a = name_to_id[name_a]
+            idx_b = name_to_id[name_b]
+            dists[(idx_a, idx_b) if idx_a < idx_b else (idx_b, idx_a)] = dist
+
+
+    np.savetxt("foogun.csv", dists, delimiter=",")
+
+    up_mat = np.triu(dists)
+    linkage = scipy.cluster.hierarchy.single(up_mat)
+
     def cluster_dist(self):
         """calculate distance sketch"""
 
-
     def run(self):
         """luigi run"""
-        dist_mat = convert2matrix(self.dist_file)
-        linkage = cluster(dist_mat, self.dist_algo)
+        linkage = get_linkage(self.out_folder)
 
     def output(self):
         """output"""
