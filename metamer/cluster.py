@@ -7,49 +7,7 @@ import os
 from collections import defaultdict
 import csv
 import itertools
-# from matplotlib import pyplot as plt
 import functools
-
-# from scipy.spatial.distance import squareform, pdist
-
-
-# def conv_matrix(md):
-# 	"""Converts the table that that has ref-query-dist-pvalue,shared to distance
-# 	matrix """
-# 	mdf = pd.read_csv(md, sep="\t", names=["m1", "m2", "dist", "pvalue", "shared"])
-# 	mdf = mdf[mdf['dist'] < 1]
-# 	mdf["m1"] = mdf["m1"].apply(lambda x: x.split("/")[-1])
-# 	mdf["m2"] = mdf["m2"].apply(lambda x: x.split("/")[-1])
-# 	dmc = mdf[['m1', 'm2', 'dist']]
-# 	print(dmc)
-# 	dm = dmc.pivot(index='m1', columns='m2', values='dist')
-# 	dm = dm.values
-# 	return dm
-
-# mat = conv_matrix("tests/data/dists/test_table.txt")
-
-# sklearn.cluster.AgglomerativeClustering(n_clusters=None, affinity="pre-computed", connectivity=None, compute_full_tree=True, linkage="average",
-# 										distance_threshold=None)
-
-# This is the one that works
-
-def convert2matrix(dist_file):
-    """A function that converts mash distance file to hierarchical clustering."""
-    # read in the output file from mash
-    mdf = pd.read_csv(dist_file, sep="\t", names=["m1", "m2", "dist",
-                                                  "pvalue", "shared"])
-    mdf["m1"] = mdf["m1"].apply(lambda x: x.split("/")[-1])
-    mdf["m2"] = mdf["m2"].apply(lambda x: x.split("/")[-1])
-    mdf = mdf.sort_values(by=["m1"])  # sort based on first column
-    # pivot the df and then replace NA wit
-    udf = mdf.pivot(index="m1", columns="m2", values="dist").fillna(0)
-    # insert the missing column
-    udf.insert(loc=0, column=udf.index[0], value=[0.0]*udf.shape[0],
-               allow_duplicates=True)
-    # insert the missing row
-    udf.loc[udf.columns[-1]] = [0.0]*udf.shape[1]
-    return udf.values
-
 
 def cluster(mat, dist):
     """Given a matrix and distance perform hierarchical clustering."""
@@ -83,20 +41,6 @@ def plot_hclust(linkage):
     plt.show()
 
 
-
-    # sns.set()
-
-    # plt.figure(figsize=(25, 10))
-    # plt.title('Hierarchical Clustering Dendrogram')
-    # plt.xlabel('sample index')
-    # plt.ylabel('distance')
-    # scipy.cluster.hierarchy.dendrogram(
-    #     linkage,
-    #     leaf_rotation=90.,  # rotates the x axis labels
-    #     leaf_font_size=8.,  # font size for the x axis labels
-    # )
-    # plt.show()
-
 class ClusterSamples(Task):
     """luigi class for clustering mash distance."""
     out_dir = Parameter()
@@ -111,7 +55,7 @@ class ClusterSamples(Task):
         # An empty data structure.
         name_to_id = defaultdict(functools.partial(next, itertools.count()))
 
-    # open the file
+        # open the file
         mash_dist_file = os.path.join(self.out_dir, "mash_dist.txt")
         with open(mash_dist_file) as f:
             reader = csv.reader(f, delimiter="\t")
@@ -143,7 +87,20 @@ class ClusterSamples(Task):
 
         up_mat = np.triu(dists)
         linkage = scipy.cluster.hierarchy.single(up_mat)
-        return linkage
+        id_to_name = dict((id, name) for name, id in name_to_id.items())
+        return linkage, id_to_name
+
+    def parse_clusters(self, linkage, id_to_name):
+        flat_clus = scipy.cluster.hierarchy.fcluster(linkage, 0.9)
+        cluster_file = os.path.join(self.out_dir, "clusters.txt")
+        md = defaultdict(list)
+        for cl, a in enumerate(flat_clus):
+            md[a].append(id_to_name[cl].split("/")[-1])
+        print(md)
+        with open(cluster_file, 'w') as cl_file:
+            writer = csv.writer(cl_file)    
+            for cl, mem in md.items():
+                writer.writerow([cl, mem])
 
     def plot_linkage(self, linkage):
         plt.figure(figsize=(25, 10))
@@ -158,10 +115,11 @@ class ClusterSamples(Task):
 
     def run(self):
         """luigi run"""
-        linkage = self.get_linkage()
+        linkage, id_to_name = self.get_linkage()
+        self.parse_clusters(linkage, id_to_name)
         # plot_linkage(linkage)
 
     def output(self):
         """output"""
-        mash_dist_file = os.path.join(self.out_dir, "cluster.png")
+        mash_dist_file = os.path.join(self.out_dir, "clusters.txt")
         return LocalTarget(mash_dist_file)
