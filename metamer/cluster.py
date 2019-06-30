@@ -9,6 +9,7 @@ import csv
 import itertools
 import functools
 
+
 def cluster(mat, dist):
     """Given a matrix and distance perform hierarchical clustering."""
 
