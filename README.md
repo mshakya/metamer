@@ -6,8 +6,9 @@ MetaMer is a workflow to cluster shotgun sequencing samples based on shared k-me
 
 # 0.0 INSTALLATION
 
+```
 PYTHON VERSION >= 3.6
-
+```
 ## 0.1 DEPENDENCIES
 
 ### 0.1.2 PYTHON DEPENDENCIES
@@ -23,9 +24,10 @@ Seaborn >= 0.9.0
 ```
 
 ### 0.1.3 THIRD PARTY DEPENDENCIES
+```
 mash >= 2.1.1
 faqcs
-
+```
 MetaMer can be installed by following instructions below:
 
 First install conda, if you dont have it installed. See instructions on how to install miniconda [here](https://docs.conda.io/en/latest/miniconda.html). Install miniconda that supports Python 3.
@@ -60,7 +62,7 @@ If the installation is succesful, you should be able to type `metamer -h` and ge
 metamer -h
 ```
 
-# HOW TO RUN METAMER?
+# 1.0 HOW TO RUN METAMER?
 
 metamer requires a `luigi` config file. An example comfig file can be found in this repo. Make a copy of `luigi.cfg` and edit it with information pertinent to your run.
 
@@ -70,13 +72,15 @@ After having a well annotated config file, metamer can be run by simply typing
 /path/to/bin/metamer -c /path/to/luigi.cfg
 ```
 
-# INPUT
-metamer takes raw read paired fastq files as input. Paired reads must have names with suffixes *R1.fastq and *R2.fastq indicating the forward and reverse pairs. fastqs can also be compressed and files can have suffixes like *R1.fastq.gz. An example folder can be found in 'tests/data/fqs' folder of this repository.
+# 1.1 INPUT
+    All inputs are specified in a config file. An example file named `luigi.cfg` can be found included in the repo.
 
-# OUTPUT
-metamer outputs a distance matrix (`mash_dist.txt`) and a hierachical clustering figure generated using clustering algorithm.
+    metamer takes raw read paired fastq files as input. Paired reads must have names with suffixes *R1.fastq and *R2.fastq indicating the forward and reverse pairs. fastqs can also be compressed and files can have suffixes like *R1.fastq.gz. An example folder can be found in 'tests/data/fqs' folder of this repository.
+
+# 1.2 OUTPUT
+
+metamer outputs `clusters.txt` in the output folder. Its a csv file, that has name of the cluster in first column and sample names that belong to the cluster.
+
+metamer also outputs a distance matrix of mash distances (`mash_dist.txt`) in coordinate form and square form (`dist.txt`).
 
 # LICENSE
-
-
-
