@@ -6,6 +6,7 @@ MetaMer is a workflow to cluster shotgun sequencing samples based on shared k-me
 
 # 0.0 INSTALLATION
 
+PYTHON VERSION >= 3.6
 
 ## 0.1 DEPENDENCIES
 
