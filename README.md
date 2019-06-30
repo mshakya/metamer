@@ -52,7 +52,8 @@ metamer -c /path/to/luigi.cfg
 # INPUT
 metamer takes raw read paired fastq files as input. Paired reads must have names with suffixes *R1.fastq and *R2.fastq indicating the forward and reverse pairs. fastqs can also be compressed and files can have suffixes like *R1.fastq.gz. An example folder can be found in 'tests/data/fqs' folder of this repository.
 
-
+# OUTPUT
+metamer outputs a distance matrix (`mash_dist.txt`) and a hierachical clustering figure generated using clustering algorithm.
 
 # LICENSE
 

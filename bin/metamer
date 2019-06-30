@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 
 """
-metamash pipeline
-
-wrapper for metamash
+metamer workflow
 
 """
 
@@ -19,7 +17,8 @@ bin_path = os.path.join(lib_path, 'bin')
 sys.path.append(lib_path)
 os.environ["PATH"] += os.pathsep + bin_path
 from luigi.interface import build
-from metamash import parse_metainput, create_sketch, calc_dist
+from metamash import parse_metainput, sketch, dist
+from metamash import faqcs, miscs, cluster
 
 
 def cmdline_parser():
@@ -36,10 +35,11 @@ def cmdline_parser():
 
     parser = argparse.ArgumentParser(formatter_class=CustomFormatter,
                                      prog='metamer',
-                                     description="""comparing metagenomes using mash""",
+                                     description="""A framework workflow for clustering metagenomes""",
                                      epilog="""
-It requires a metadata table that contains information regarding metagenome
-samples
+The workflow processes metagenomes within a folder through Quality Control, sketches using mash, and then
+further calculates the distance, which can then be further clustered using single or average linkage agglomerative
+clustering.
 
 """)
 
@@ -49,27 +49,10 @@ samples
 
     required_args = parser.add_argument_group('required arguments')
 
-    required_args.add_argument("-d", dest="WORKDIR", help="""directory where all
-        fastq files are""", required=True)
-
-    required_args.add_argument("-m", dest="META", help="""tab delimited meta
-        data file""", required=True, default=argparse.SUPPRESS)
+    required_args.add_argument("-c", dest="CONGIF", help="""config file.""",
+                               required=True)
 
     parser.add_argument('--version', action='version', version='%(prog)s 0.0.0')
-
-    parser.add_argument("-c", dest="CONGIF", help="""config file.""",
-                        required=True)
-
-    parser.add_argument("-k", dest="KMER", help="""k-mer size to set.""",
-                        required=False, default=21)
-    parser.add_argument("-e", dest="SEED", help="""seed to set.""",
-                        required=False, default=547)
-    parser.add_argument("-n", dest="MIN", help="""minimum number of copy.""",
-                        required=False, default=2)
-    parser.add_argument("-s", dest="SKETCH", help="""sketch size""", required=False,
-                        default=1000)
-    parser.add_argument("-o", dest="OUT_FOLDER", help="""folder to keep all output files""", required=False,
-                        default=".")
     return parser
 
 
@@ -82,65 +65,10 @@ def main():
     parser = cmdline_parser()
     args = parser.parse_args()
 
-    # Getting absolute path of some directories
-    workdir = os.path.abspath(args.WORKDIR)
-    bindir = os.path.abspath(os.path.join(dir_path, '..', 'bin'))
-    out_dir = os.path.abspath(args.OUT_FOLDER)
-    if not os.path.exists(out_dir):
-        os.makedirs(out_dir)
-    os.environ['PATH'] = os.environ['PATH'] + ":" + bindir
+    build([faqcs.RunAllQC(), sketch.AllSketches(),
+           dist.Alldist(), cluster.ClusterSamples()],
+          local_scheduler=True, workers=1)
 
-    fq_dt = parse_metainput.parse_meta(args.META)
-
-
-    
-
-    for sample, fastq in fq_dt.items():
-        if len(fastq) > 1:
-            build([create_sketch.CreateReadSketches(read1=str(os.path.join(workdir, fastq[0])),
-                                                    read2=str(os.path.join(workdir, fastq[1])),
-                                                    smp=sample,
-                                                    kmer=args.KMER,
-                                                    threads=1,
-                                                    sketch=args.SKETCH,
-                                                    seed=args.SEED,
-                                                    min_copy=args.MIN,
-                                                    out_dir=out_dir,
-                                                    fq_dir=workdir)],
-            local_scheduler = True, workers=args.THREADS)
-        elif len(fastq) == 1:
-            build([create_sketch.CreateReadSketches(read1=str(os.path.join(workdir, fastq[0])),
-                                                    read2=None,
-                                                    smp=sample,
-                                                    kmer=args.KMER,
-                                                    threads=1,
-                                                    sketch=args.SKETCH,
-                                                    seed=args.SEED,
-                                                    min_copy=args.MIN,
-                                                    out_dir=out_dir,
-                                                    fq_dir=workdir)],
-            local_scheduler = True, workers=args.THREADS)
-
-    all_samples = [sample for sample, fastq in fq_dt.items()]
-    for skch in itertools.combinations_with_replacement(all_samples, 2):
-        build([calc_dist.CalculateDist(sk1=os.path.join(workdir, skch[0] +
-                                                            "_k" + str(args.KMER) +
-                                                            "_ss" + str(args.SKETCH) +
-                                                            "_sd" + str(args.SEED) +
-                                                            ".msh"),
-                                           sk2=os.path.join(workdir, skch[1] +
-                                                            "_k" + str(args.KMER) +
-                                                            "_ss" + str(args.SKETCH) +
-                                                            "_sd" + str(args.SEED) +
-                                                            ".msh"),
-                                           threads=args.THREADS,
-                                            # sk_dir=workdir,
-                                            out_file=os.path.join(out_dir, "dist.txt"))],
-            local_scheduler = True, workers=1)
-        # build([create_heatmap.CalculateDist(threads=args.THREADS,
-        #                                     sk_dir=workdir,
-        #                                     out_file=os.path.join(out_dir, "dist.txt"))],
-        #     local_scheduler = True, workers=1)
 
 
 

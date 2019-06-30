@@ -17,20 +17,20 @@ class CalculateDist(Task):
     sk1 = Parameter()
     sk2 = Parameter()
     threads = IntParameter()  # # of threads to trigger
-    out_file = Parameter()  # files are copied and kept
+    out_dir = Parameter()  # files are copied and kept
 
     def requires(self):
         LocalTarget(self.sk1)
 
     def calc_dist(self):
         """calculate distance sketch"""
-        with open(self.out_file, 'a+') as file:
+        out_file = os.path.join(self.out_dir, "mash_dist.txt")
+        with open(out_file, 'a+') as file:
             dir_name = os.path.dirname(self.sk1)
             dist_cmd = ["dist", "-p", self.threads, str(self.sk1),
                         str(self.sk2)]
             dist_info = mash[dist_cmd]()
             dist_info = dist_info.replace(dir_name, "")
-            # dist_info = dist_info.replace("/", "")
             dist_info = re.sub('\.fastq', '', dist_info)
             dist_info = re.sub('\.gz', '', dist_info)
             file.write(dist_info)
@@ -41,21 +41,22 @@ class CalculateDist(Task):
 
     def output(self):
         """output"""
-        # return faqcs.RefFile(self.out_file)
-        return LocalTarget(self.out_file)
+        out_file = os.path.join(self.out_dir, "mash_dist.txt")
+        return LocalTarget(out_file)
 
 
 class Alldist(luigi.WrapperTask):
     "Run all Comparisons"
     data_folder = Parameter()  # folder that has sketch files
     threads = IntParameter()  # of threads to trigger
-    out_table = Parameter()  # Table file with all comparisons
+    out_dir = Parameter()  # Folder that has outputs
     mash_tool = Parameter()  # sourmash or mash
 
     def requires(self):
         """A wrapper for comparing sketches."""
+
         sk_list = miscs.sk2list(self.data_folder)
         all_pairs = list(itertools.combinations(sk_list, 2))
         for pair in all_pairs:
             yield CalculateDist(sk1=pair[0], sk2=pair[1], threads=self.threads,
-                                out_file=self.out_table)
+                                out_dir=self.out_dir)

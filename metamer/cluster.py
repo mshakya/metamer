@@ -1,6 +1,14 @@
 import pandas as pd
-import sklearn.cluster
-import scipy
+# import sklearn.cluster
+import scipy.cluster
+import numpy as np
+from luigi import IntParameter, Parameter, ListParameter, LocalTarget, Task
+import os
+from collections import defaultdict
+import csv
+import itertools
+# from matplotlib import pyplot as plt
+import functools
 
 # from scipy.spatial.distance import squareform, pdist
 
@@ -50,11 +58,11 @@ def cluster(mat, dist):
     # Z = scipy.cluster.hierarchy.linkage(up_mat, method=dist)
     if dist == "single":
         Z = scipy.cluster.hierarchy.single(up_mat)
-    elif dist = "complete":
+    elif dist == "complete":
         Z = scipy.cluster.hierarchy.complete(up_mat)
-    elif dist = "average":
+    elif dist == "average":
         Z = scipy.cluster.hierarchy.average(up_mat)
-    elif dist = "weighted":
+    elif dist == "weighted":
         Z = scipy.cluster.hierarchy.weighted(up_mat)
     return Z
 
@@ -75,24 +83,85 @@ def plot_hclust(linkage):
     plt.show()
 
 
+
+    # sns.set()
+
+    # plt.figure(figsize=(25, 10))
+    # plt.title('Hierarchical Clustering Dendrogram')
+    # plt.xlabel('sample index')
+    # plt.ylabel('distance')
+    # scipy.cluster.hierarchy.dendrogram(
+    #     linkage,
+    #     leaf_rotation=90.,  # rotates the x axis labels
+    #     leaf_font_size=8.,  # font size for the x axis labels
+    # )
+    # plt.show()
+
 class ClusterSamples(Task):
     """luigi class for clustering mash distance."""
-    dist_file = Parameter()
-    dist_algo = Parameter()
+    out_dir = Parameter()
+    # dist_algo = Parameter()
 
     def requires(self):
-        LocalTarget(self.dist_file)
+        dfile = os.path.join(self.out_dir, "mash_dist.txt")
+        LocalTarget(dfile)
 
-    def cluster_dist(self):
-        """calculate distance sketch"""
+    def get_linkage(self):
+        """A function that clusters."""
+        # An empty data structure.
+        name_to_id = defaultdict(functools.partial(next, itertools.count()))
 
+    # open the file
+        mash_dist_file = os.path.join(self.out_dir, "mash_dist.txt")
+        with open(mash_dist_file) as f:
+            reader = csv.reader(f, delimiter="\t")
+
+    # do one pass over the file to get all the IDs so we know how 
+    # large to make the matrix, then another to fill in the data.
+    # this takes more time but uses less memory than loading everything
+    # in in one pass, because we don't know how large the matrix is; you
+    # can skip this if you do know the number of elements from elsewhere.
+            for name_a, name_b, dist, p, share in reader:
+                idx_a = name_to_id[name_a]
+                idx_b = name_to_id[name_b]
+
+    # make the (square) distances matrix
+    # this should really be triangular, but the formula for 
+    # indexing into that is escaping me at the moment
+                n_elem = len(name_to_id)
+                dists = np.zeros((n_elem, n_elem))
+
+        # go back to the start of the file and read in the actual data
+            f.seek(0)
+            for name_a, name_b, dist, p, share in reader:
+                idx_a = name_to_id[name_a]
+                idx_b = name_to_id[name_b]
+                dists[(idx_a, idx_b) if idx_a < idx_b else (idx_b, idx_a)] = dist
+
+        np.savetxt(os.path.join(self.out_dir, "dist.txt"),
+                   dists, delimiter=",")
+
+        up_mat = np.triu(dists)
+        linkage = scipy.cluster.hierarchy.single(up_mat)
+        return linkage
+
+    def plot_linkage(self, linkage):
+        plt.figure(figsize=(25, 10))
+        plt.title('Hierarchical Clustering Dendrogram')
+        plt.xlabel('sample index')
+        plt.ylabel('distance')
+        scipy.cluster.hierarchy.dendrogram(linkage,
+                                           leaf_rotation=90.,  # rotates the x axis labels
+                                           leaf_font_size=8.)  # font size for the x axis labels
+        plt_file = os.path.join(self.out_dir, "cluster.png")
+        plt.save()
 
     def run(self):
         """luigi run"""
-        dist_mat = convert2matrix(self.dist_file)
-        linkage = cluster(dist_mat, self.dist_algo)
+        linkage = self.get_linkage()
+        # plot_linkage(linkage)
 
     def output(self):
         """output"""
-        # return faqcs.RefFile(self.out_file)
-        return LocalTarget(self.out_file)
+        mash_dist_file = os.path.join(self.out_dir, "cluster.png")
+        return LocalTarget(mash_dist_file)
