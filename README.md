@@ -4,7 +4,27 @@
 
 MetaMer is a workflow to cluster shotgun sequencing samples based on shared k-mers. 
 
-# INSTALLATION
+# 0.0 INSTALLATION
+
+
+## 0.1 DEPENDENCIES
+
+### 0.1.2 PYTHON DEPENDENCIES
+```
+numpy >= 1.15.1
+scipy >= 1.3.0,
+luigi >= 2.7.5,
+plumbum >= 1.6.6,
+pandas >= 0.23.4,
+pathlib >= 1.0.1,
+matplotlib >= 3.1.0,
+Seaborn >= 0.9.0
+```
+
+### 0.1.3 THIRD PARTY DEPENDENCIES
+mash >= 2.1.1
+faqcs
+
 MetaMer can be installed by following instructions below:
 
 First install conda, if you dont have it installed. See instructions on how to install miniconda [here](https://docs.conda.io/en/latest/miniconda.html). Install miniconda that supports Python 3.
@@ -46,7 +66,7 @@ metamer requires a `luigi` config file. An example comfig file can be found in t
 After having a well annotated config file, metamer can be run by simply typing
 
 ```
-metamer -c /path/to/luigi.cfg
+/path/to/bin/metamer -c /path/to/luigi.cfg
 ```
 
 # INPUT
