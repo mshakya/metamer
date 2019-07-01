@@ -73,9 +73,9 @@ After having a well annotated config file, metamer can be run by simply typing
 ```
 
 # 1.1 INPUT
-    All inputs are specified in a config file. An example file named `luigi.cfg` can be found included in the repo.
+All inputs are specified in a config file. An example file named `luigi.cfg` can be found included in the repo.
 
-    metamer takes raw read paired fastq files as input. Paired reads must have names with suffixes *R1.fastq and *R2.fastq indicating the forward and reverse pairs. fastqs can also be compressed and files can have suffixes like *R1.fastq.gz. An example folder can be found in 'tests/data/fqs' folder of this repository.
+metamer takes raw read paired fastq files as input. Paired reads must have names with suffixes *R1.fastq and *R2.fastq indicating the forward and reverse pairs. fastqs can also be compressed and files can have suffixes like *R1.fastq.gz. An example folder can be found in 'tests/data/fqs' folder of this repository.
 
 # 1.2 OUTPUT
 
