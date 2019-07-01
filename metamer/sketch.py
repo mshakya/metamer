@@ -48,7 +48,7 @@ class CreateReadSketches(Task):
 
 class AllSketches(WrapperTask):
     """ perform sketches on all samples"""
-    data_folder = Parameter()
+    fq_folder = Parameter()
     kmer = IntParameter()  # k-mer size
     threads = IntParameter()  # of threads to trigger
     sketch = IntParameter()  # sketch size
@@ -59,10 +59,13 @@ class AllSketches(WrapperTask):
 
     def requires(self):
         """A wrapper for running sketches."""
-        fq_dic = f2dic(self.data_folder)
+        fq_dic = f2dic(self.fq_folder)
+        # fq_folder = os.path.join(self.out_dir, "qcs")
         if os.path.exists(self.out_dir) is False:
             os.mkdir(os.path.join(self.out_dir))
         for samp, fastq in fq_dic.items():
+            read1 = os.path.join("qcs", samp, samp + ".1.trimmed.fastq")
+            read2 = os.path.join("qcs", samp, samp + ".2.trimmed.fastq")
             yield CreateReadSketches(smp=samp,
                                      kmer=self.kmer,
                                      threads=self.threads,
@@ -71,5 +74,5 @@ class AllSketches(WrapperTask):
                                      min_copy=self.min_copy,
                                      out_dir=self.out_dir,
                                      mash_tool="mash",
-                                     read1=fastq[0],
-                                     read2=fastq[1])
+                                     read1=read1,
+                                     read2=read2)
