@@ -17,8 +17,8 @@ bin_path = os.path.join(lib_path, 'bin')
 sys.path.append(lib_path)
 os.environ["PATH"] += os.pathsep + bin_path
 from luigi.interface import build
-from metamash import parse_metainput, sketch, dist
-from metamash import faqcs, miscs, cluster
+from metamer import parse_metainput, sketch, dist
+from metamer import faqcs, miscs, cluster
 
 
 def cmdline_parser():
