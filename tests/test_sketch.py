@@ -38,5 +38,5 @@ def test_CreateReadSketches():
                               mash_tool="mash")],
                           local_scheduler=True, workers=1)
     file_exist = os.path.exists("tests/sk_test/SRR059451_.msh")
-    # shutil.rmtree("tests/sk_test")
+    shutil.rmtree("tests/sk_test")
     assert file_exist is True
