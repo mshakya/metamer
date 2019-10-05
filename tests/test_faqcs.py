@@ -27,6 +27,6 @@ def test_faqcs():
                                           faqc_min_L=50,
                                           n_cutoff=4)],
                           local_scheduler=True, workers=1)
-    file_exist = os.path.exists("tests/qc_results/qcs/SRR059451_/SRR059451__qc_report.pdf")
+    file_exist = os.path.exists("tests/qc_results/qcs/SRR059451_/SRR059451_.stats.txt")
     shutil.rmtree("tests/qc_results")
     assert file_exist is True
