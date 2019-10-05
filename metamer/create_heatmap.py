@@ -11,7 +11,7 @@ import pandas as pd
 def create_heatmap(dist, x, y, title, out_file):
 	"""read in the dataframe and create heatmap."""
 
-	print(dist)
+	# print(dist)
 
 	fig, ax = plt.subplots()
 	im = ax.imshow(dist)

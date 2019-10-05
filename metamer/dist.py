@@ -25,10 +25,13 @@ class CalculateDist(Task):
     def calc_dist(self):
         """calculate distance sketch"""
         out_file = os.path.join(self.out_dir, "mash_dist.txt")
+        if os.path.exists(out_file) is False:
+            f = open(out_file, 'w')
+            f.close()
         with open(out_file, 'a+') as file:
             dir_name = os.path.dirname(self.sk1)
             dist_cmd = ["dist", "-p", self.threads, str(self.sk1),
-                        str(self.sk2)]
+                    str(self.sk2)]
             dist_info = mash[dist_cmd]()
             dist_info = dist_info.replace(dir_name, "")
             dist_info = re.sub('\.fastq', '', dist_info)
@@ -56,7 +59,10 @@ class Alldist(luigi.WrapperTask):
         """A wrapper for comparing sketches."""
 
         sk_list = miscs.sk2list(self.data_folder)
+        print(sk_list)
         all_pairs = list(itertools.combinations(sk_list, 2))
         for pair in all_pairs:
+            print("urshula")
+            print(pair)
             yield CalculateDist(sk1=pair[0], sk2=pair[1], threads=self.threads,
                                 out_dir=self.out_dir)

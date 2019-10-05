@@ -28,15 +28,15 @@ def test_CalculateDist(tmpdir):
                                           faqc_min_L=50,
                                           n_cutoff=4),
                           sketch.AllSketches(fq_folder="tests/data/fqs",
-                          kmer=31, threads=2, sketch=100,
+                          kmer=31, threads=1, sketch=100,
                           seed=2500, min_copy=2, out_dir="tests/dist_test",
-                          mash_tool="mash"),
-                          dist.Alldist(data_folder="tests/dist_test",
-                                       threads=8,
+                          mash_tool="mash")], local_scheduler=True, workers=1)
+    luigi.interface.build([dist.Alldist(data_folder="tests/dist_test",
+                                       threads=1,
                                        out_dir="tests/dist_test",
                                        mash_tool="mash")],
                                       local_scheduler=True, workers=1)
 
     file_exist = os.path.exists("tests/dist_test/mash_dist.txt")
-    shutil.rmtree("tests/dist_test")
+    # shutil.rmtree("tests/dist_test")
     assert file_exist is True
