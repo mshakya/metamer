@@ -3,6 +3,7 @@
 
 import os
 import re
+import sys
 
 
 def f2dic(fq_folder):
