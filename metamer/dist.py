@@ -58,11 +58,8 @@ class Alldist(luigi.WrapperTask):
     def requires(self):
         """A wrapper for comparing sketches."""
 
-        sk_list = miscs.sk2list(self.data_folder)
-        print(sk_list)
+        sk_list = miscs.sk2list(os.path.join(self.data_folder, ".mash"))
         all_pairs = list(itertools.combinations(sk_list, 2))
         for pair in all_pairs:
-            print("urshula")
-            print(pair)
             yield CalculateDist(sk1=pair[0], sk2=pair[1], threads=self.threads,
                                 out_dir=self.out_dir)

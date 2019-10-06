@@ -99,7 +99,7 @@ class RunAllQC(luigi.WrapperTask):
                 sys.exit("fastq file name should end with R[1-2].fastq or R[1-2].fastq.gz")
         for samp, fastq in fq_dic.items():
             fastq_sort = sorted(fastq)  # sort, so that R1 comes before R2
-            trim_dir = os.path.join(self.out_dir, "qcs", samp)
+            trim_dir = os.path.join(self.out_dir, ".qcs", samp)
             if os.path.isdir(trim_dir) is False:
                 os.makedirs(trim_dir)
             yield PairedRunQC(fastqs=fastq_sort,  # list of fastq files

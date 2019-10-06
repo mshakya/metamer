@@ -65,12 +65,13 @@ def main():
     parser = cmdline_parser()
     args = parser.parse_args()
 
-    build([faqcs.RunAllQC(), sketch.AllSketches(),
-           dist.Alldist(), cluster.ClusterSamples()],
-          local_scheduler=True, workers=1)
+    build([faqcs.RunAllQC()],local_scheduler=True, workers=1)
 
+    build([sketch.AllSketches()], local_scheduler=True, workers=1)
 
+    build([dist.Alldist()], local_scheduler=True, workers=1)
 
+    build([cluster.ClusterSamples()], local_scheduler=True, workers=1)
 
 
 if __name__ == '__main__':

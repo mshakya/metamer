@@ -83,7 +83,6 @@ After having a well annotated config file, metamer can be run by simply typing
 
 ### 1.1.1 Setup the config file.
 
-
 Set what tool to use for generating MinHash distance in `mash_tool`. Right now, `metamer` only have one option and that is to use `mash`. Also, set the path to output folder in `out_dir`. All the outputs and intermediate files will be written in this folder.
 
 ```
@@ -92,6 +91,7 @@ Set what tool to use for generating MinHash distance in `mash_tool`. Right now, 
 mash_tool = mash
 # directory where all files are copied and kept
 out_dir = tests/test_run
+fq_folder = tests/data/fqs
 
 ```
 
@@ -111,7 +111,6 @@ Following parameters are running for Quality control using FaQCs.
 
 ```
 [RunAllQC]
-fq_folder = tests/data/fqs
 # of CPUs to run the script 
 num_cpus = 2
 #  Trimmed read should have to be at least this minimum length
@@ -121,7 +120,7 @@ n_cutoff = 10
 
 ```
 
-Following parameters are specific for 
+Following parameters are specific for mash
 
 ```
 
@@ -138,6 +137,7 @@ seed = 439
 min_copy = 1
 ```
 
+Fo
 ```
 [Alldist]
 # folder that has sketch files
@@ -146,6 +146,10 @@ data_folder = tests/test_run
 threads = 2
 
 ```
+
+
+An example config file that can be directly used is included in the repo.
+
 
 
 

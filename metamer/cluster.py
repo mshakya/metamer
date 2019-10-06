@@ -1,6 +1,8 @@
 import pandas as pd
 import scipy.cluster
+import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 from luigi import IntParameter, Parameter, ListParameter, LocalTarget, Task
 import os
 from collections import defaultdict
@@ -96,13 +98,14 @@ class ClusterSamples(Task):
         md = defaultdict(list)
         for cl, a in enumerate(flat_clus):
             md[a].append(id_to_name[cl].split("/")[-1])
-        print(md)
         with open(cluster_file, 'w') as cl_file:
-            writer = csv.writer(cl_file)    
+            writer = csv.writer(cl_file)
             for cl, mem in md.items():
                 writer.writerow([cl, mem])
 
     def plot_linkage(self, linkage):
+        cluster_fig = os.path.join(self.out_dir, "clusters.png")
+        fig = plt.figure()
         plt.figure(figsize=(25, 10))
         plt.title('Hierarchical Clustering Dendrogram')
         plt.xlabel('sample index')
@@ -110,14 +113,14 @@ class ClusterSamples(Task):
         scipy.cluster.hierarchy.dendrogram(linkage,
                                            leaf_rotation=90.,  # rotates the x axis labels
                                            leaf_font_size=8.)  # font size for the x axis labels
-        plt_file = os.path.join(self.out_dir, "cluster.png")
-        plt.save()
+        plt_file = os.path.join(cluster_fig)
+        fig.savefig(plt_file)
 
     def run(self):
         """luigi run"""
         linkage, id_to_name = self.get_linkage()
         self.parse_clusters(linkage, id_to_name)
-        # plot_linkage(linkage)
+        self.plot_linkage(linkage)
 
     def output(self):
         """output"""

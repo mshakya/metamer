@@ -26,7 +26,7 @@ def test_CreateReadSketches():
     test for creating sketches
 
     """
- 
+
     build([faqcs.RunAllQC(fq_folder="tests/data/fqs",
                           out_dir="tests/sk_test",
                           num_cpus=1,
@@ -37,6 +37,6 @@ def test_CreateReadSketches():
                               seed=2500, min_copy=2, out_dir="tests/sk_test",
                               mash_tool="mash")],
                           local_scheduler=True, workers=1)
-    file_exist = os.path.exists("tests/sk_test/SRR059451_.msh")
+    file_exist = os.path.exists("tests/sk_test/.mash/SRR059451_.msh")
     shutil.rmtree("tests/sk_test")
     assert file_exist is True

@@ -25,16 +25,20 @@ class CreateReadSketches(Task):
 
     def output(self):
         """to check if msh is present"""
-        return LocalTarget(os.path.join(self.out_dir, self.smp + ".msh"))
+        return LocalTarget(os.path.join(self.out_dir, ".mash",
+                                        self.smp + ".msh"))
 
     def sketch_pair(self):
         """create sketch"""
         logger = logging.getLogger('luigi-interface')  # setup logger
+        if os.path.exists(os.path.join(self.out_dir, ".mash")) is False:
+            os.makedirs(os.path.join(self.out_dir, ".mash"))
+
         if self.mash_tool == "mash":
             sketch_cmd = ["sketch", "-k", self.kmer, "-p", self.threads,
                           "-s", self.sketch, "-S", self.seed,
                           "-r",
-                          "-o", os.path.join(self.out_dir, self.smp + ".msh"),
+                          "-o", os.path.join(self.out_dir, ".mash", self.smp + ".msh"),
                           os.path.join(self.out_dir, self.read1),
                           os.path.join(self.out_dir, self.read2)]
         logger.info(mash[sketch_cmd]())
@@ -60,12 +64,12 @@ class AllSketches(WrapperTask):
     def requires(self):
         """A wrapper for running sketches."""
         fq_dic = f2dic(self.fq_folder)
-        # fq_folder = os.path.join(self.out_dir, "qcs")
+        # fq_folder = os.path.join(self.out_dir, ".qcs")
         if os.path.exists(self.out_dir) is False:
             os.mkdir(os.path.join(self.out_dir))
         for samp, fastq in fq_dic.items():
-            read1 = os.path.join("qcs", samp, samp + ".1.trimmed.fastq")
-            read2 = os.path.join("qcs", samp, samp + ".2.trimmed.fastq")
+            read1 = os.path.join(".qcs", samp, samp + ".1.trimmed.fastq")
+            read2 = os.path.join(".qcs", samp, samp + ".2.trimmed.fastq")
             yield CreateReadSketches(smp=samp,
                                      kmer=self.kmer,
                                      threads=self.threads,
