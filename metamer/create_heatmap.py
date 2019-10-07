@@ -41,7 +41,7 @@ def create_heatmap(dist, x, y, title, out_file):
 
 def create_sns_heatmap(dist_file):
 	mash_df = pd.read_csv(dist_file, sep="\t", header=None)
-	print(mash_df)
+	# print(mash_df)
 	upper_dist_df = mash_df.pivot(0, 1, 2).fillna(0)
 	print(upper_dist_df)
 	lower_dist_df = mash_df.pivot(0, 1, 2).transpose().fillna(0)

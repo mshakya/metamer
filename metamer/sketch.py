@@ -118,12 +118,7 @@ class AllSketches(WrapperTask):
                                      read1=read1,
                                      read2=read2)
         if len(fna_dic) > 0:
-            print("urshula")
-            print(fna_dic)
             for samp, fna in fna_dic.items():
-                print("urshula")
-                print(samp)
-                print(fna)
                 yield CreateFastaSketches(smp=samp,
                                           kmer=self.kmer,
                                           threads=self.threads,
