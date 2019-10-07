@@ -68,9 +68,18 @@ If the installation is succesful, you should be able to type `metamer -h` and ge
 metamer -h
 ```
 
-# 1.0 HOW TO RUN METAMER?
+And, you can run a quick test using
 
-metamer requires a `luigi` config file. An example config file can be found [here](https://raw.githubusercontent.com/mshakya/metamer/master/luigi.cfg). 
+```
+cd metamer
+metamer luigi.cfg
+
+```
+
+
+# 2.0.0 HOW TO RUN METAMER?
+
+metamer requires a `luigi` config file. An example config file can be found [here](https://raw.githubusercontent.com/mshakya/metamer/master/luigi.cfg).
 Make a copy of `luigi.cfg` and edit it with information pertinent to your analysis.
 
 After having a well annotated config file, metamer can be run by simply typing
@@ -83,30 +92,32 @@ After having a well annotated config file, metamer can be run by simply typing
 
 ### 1.1.1 Setup the config file.
 
-Set what tool to use for generating MinHash distance in `mash_tool`. Right now, `metamer` only have one option and that is to use `mash`. Also, set the path to output folder in `out_dir`. All the outputs and intermediate files will be written in this folder.
+Set what tool to use for generating MinHash distance in `mash_tool`. Right now, `metamer` only have one option and that is to use `mash`. Also, set the path to output folder in `out_folder`. All the outputs and intermediate files will be written in this folder. 
+
 
 ```
 [DEFAULT]
 
 mash_tool = mash
 # directory where all files are copied and kept
-out_dir = tests/test_run
-fq_folder = tests/data/fqs
+out_folder = tests/test_run
+# folder with input data (paired raw reads and fasta genomes)
+in_folder = tests/data/fqs
 
 ```
 
-These are the parameters specific to `luigi`.
+These are the parameters specific to `luigi`. Change log level to `DEBUG` if reporting an error.
+
 
 ```
 
 [core]
-log_level:DEBUG
-# default-scheduler-port:8080
+log_level:ERROR
 scheduler_url:http://localhost:8082/
 
 ```
 
-Following parameters are running for Quality control using FaQCs.
+Following parameters are running for Quality control using FaQCs. Please update the parameters if needed.
 
 
 ```
@@ -120,12 +131,12 @@ n_cutoff = 10
 
 ```
 
-Following parameters are specific for mash
+Following parameters are specific for `mash`. 
 
 ```
 
 [AllSketches]
-fq_folder = tests/data/fqs
+in_folder = tests/data/fqs
 # k-mer size
 kmer = 21
 # threads
@@ -137,27 +148,99 @@ seed = 439
 min_copy = 1
 ```
 
-Fo
+
 ```
 [Alldist]
-# folder that has sketch files
-data_folder = tests/test_run
 # of threads to trigger
 threads = 2
 
 ```
 
+For this step by step guide, we will use a small dataset that is packaged with this repo, so all the config file parameters are already set in the `luigi.cfg` file that is included in the repo.
 
-An example config file that can be directly used is included in the repo.
+### 1.1.2 Copy all input datasets to a folder
+
+`metamer` can process paired fastq raw reads and assembled fasta files from one folder. Paried raw reads must have names that end in `*_R1.fastq` and `*_R2.fastq` to identify them as part of one sample. These raw reads can also be compressed in gz format, and have names that end in `*R1.fastq.gz` and `*R2.fastq.gz`. Assembled fasta files must have `*.fna` or if compressed `*.fna.gz`. Do not forget to specify the full path to the input folder in the config file.
+
+The provided test datasets in `tests/data/fqs` is as follows:
+
+```
+
+-rw-r--r--@ 1 usr st 1.2M Sep  3 14:36 GCA_000009205.2_ASM920v2_genomic.fna.gz
+-rw-r--r--  1 usr st 4.0M Sep  3 14:36 GCA_000085225.1_ASM8522v1_genomic.fna
+-rw-r--r--  1 usr st 1.1M Sep  3 14:36 GCA_003482325.1_ASM348232v1_genomic.fna.gz
+-rw-r--r--  1 usr st 7.9K Jun 10 16:33 SRR059450_h100_R1.fastq.gz
+-rw-r--r--  1 usr st 8.1K Jun 10 16:33 SRR059450_h100_R2.fastq.gz
+-rw-r--r--  1 usr st 7.4K Jun 10 16:33 SRR059451_R1.fastq.gz
+-rw-r--r--  1 usr st 7.4K Jun 10 16:33 SRR059451_R2.fastq.gz
+-rw-r--r--  1 usr st 1.9K Jun 10 16:33 SRR059453_R1.fastq.gz
+-rw-r--r--  1 usr st 1.8K Jun 10 16:33 SRR059453_R2.fastq.gz
+-rw-r--r--  1 usr st 9.7K Jun 10 16:33 SRR059454_R1.fastq.gz
+-rw-r--r--  1 usr st 9.7K Jun 10 16:33 SRR059454_R2.fastq.gz
+-rw-r--r--  1 usr st 9.6K Jun 10 16:33 SRR059455_R1.fastq.gz
+-rw-r--r--  1 usr st 9.5K Jun 10 16:33 SRR059455_R2.fastq.gz
+-rw-r--r--  1 usr st 9.2K Jun 10 16:33 SRR059456_R1.fastq.gz
+-rw-r--r--  1 usr st 9.3K Jun 10 16:33 SRR059456_R2.fastq.gz
+-rw-r--r--  1 usr st 9.0K Jun 10 16:33 SRR059457_R1.fastq.gz
+-rw-r--r--  1 usr st 9.1K Jun 10 16:33 SRR059457_R2.fastq.gz
+-rw-r--r--  1 usr st 7.3K Jun 10 16:33 SRR059458_R1.fastq.gz
+-rw-r--r--  1 usr st 7.3K Jun 10 16:33 SRR059458_R2.fastq.gz
+-rw-r--r--  1 usr st 7.6K Jun 10 16:33 SRR059459_R1.fastq.gz
+-rw-r--r--  1 usr st 7.6K Jun 10 16:33 SRR059459_R2.fastq.gz
+
+```
+
+### 1.1.2 Run metamer
+
+`metamer` should be in the path if the user followed the instuction for installations outlined in the above sections. If thats the case, one can run `metamer` directly:
+
+```
+
+metamer -c luigi.cfg
+
+```
+
+For this tutorial, `cd` into the github repo
+
+```
+cd metamer
+```
+and run
+
+```
+metamer luigi.cfg
+```
+
+All the parameters in `luigi.cfg` has already been set for this run. Also,if metamer is not in the path, then one can directly call the `metamer` from the `bin` folder using:
+
+```
+bin/metamer luigi.cfg
+```
 
 
+# 1.1.3 OUTPUT
 
 
-metamer takes raw read paired fastq files as input. Paired reads must have names with suffixes *R1.fastq and *R2.fastq indicating the forward and reverse pairs. fastqs can also be compressed and files can have suffixes like *R1.fastq.gz. An example folder can be found in 'tests/data/fqs' folder of this repository.
+`metamer` outputs multiple files. The most important one being `clusters.txt`. It's a csv file that has name of the cluster in first column and sample names that belong to the cluster.
 
-# 1.2 OUTPUT
 
-metamer outputs `clusters.txt` in the output folder. Its a csv file, that has name of the cluster in first column and sample names that belong to the cluster.
+```
+
+8,['SRR059455_.1.trimmed']
+9,['SRR059456_.1.trimmed']
+1,['GCA_000009205.2_ASM920v2_genomic.fna']
+10,['SRR059451_.1.trimmed']
+11,['SRR059457_.1.trimmed']
+2,['GCA_000085225.1_ASM8522v1_genomic.fna']
+12,['SRR059459_.1.trimmed']
+3,['SRR059453_.1.trimmed']
+4,['SRR059450_h100_.1.trimmed']
+5,['GCA_003482325.1_ASM348232v1_genomic.fna']
+6,['SRR059458_.1.trimmed']
+7,['SRR059454_.1.trimmed']
+
+
+```
 
 metamer also outputs a distance matrix of mash distances (`mash_dist.txt`) in coordinate form and square form (`dist.txt`).
 
