@@ -121,7 +121,7 @@ class ClusterSamples(Task):
         """luigi run"""
         linkage, id_to_name = self.get_linkage()
         self.parse_clusters(linkage, id_to_name, self.threshold)
-        self.plot_linkage(linkage)
+        # self.plot_linkage(linkage)
 
     def output(self):
         """output"""
