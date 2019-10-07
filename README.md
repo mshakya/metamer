@@ -252,4 +252,3 @@ bin/metamer luigi.cfg
 
 metamer also outputs a distance matrix of mash distances (`mash_dist.txt`) in coordinate form and square form (`dist.txt`).
 
-# LICENSE
