@@ -21,8 +21,8 @@ def test_faqcs():
     """
     if os.path.exists("tests/qc_results") is False:
         os.makedirs("tests/qc_results")
-    luigi.interface.build([faqcs.RunAllQC(fq_folder="tests/data/fqs",
-                                          out_dir="tests/qc_results",
+    luigi.interface.build([faqcs.RunAllQC(in_folder="tests/data/fqs",
+                                          out_folder="tests/qc_results",
                                           num_cpus=1,
                                           faqc_min_L=50,
                                           n_cutoff=4)],
