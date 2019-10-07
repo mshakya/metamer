@@ -46,6 +46,7 @@ def plot_hclust(linkage):
 class ClusterSamples(Task):
     """luigi class for clustering mash distance."""
     out_dir = Parameter()
+    threshold = Parameter()
     # dist_algo = Parameter()
 
     def requires(self):
@@ -92,8 +93,8 @@ class ClusterSamples(Task):
         id_to_name = dict((id, name) for name, id in name_to_id.items())
         return linkage, id_to_name
 
-    def parse_clusters(self, linkage, id_to_name):
-        flat_clus = scipy.cluster.hierarchy.fcluster(linkage, 0.9)
+    def parse_clusters(self, linkage, id_to_name, threshold):
+        flat_clus = scipy.cluster.hierarchy.fcluster(linkage, criterion="distance", t=threshold)
         cluster_file = os.path.join(self.out_dir, "clusters.txt")
         md = defaultdict(list)
         for cl, a in enumerate(flat_clus):
@@ -119,7 +120,7 @@ class ClusterSamples(Task):
     def run(self):
         """luigi run"""
         linkage, id_to_name = self.get_linkage()
-        self.parse_clusters(linkage, id_to_name)
+        self.parse_clusters(linkage, id_to_name, self.threshold)
         self.plot_linkage(linkage)
 
     def output(self):
