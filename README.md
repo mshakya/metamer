@@ -2,7 +2,7 @@
 [![Build Status](https://travis-ci.org/mshakya/metamer.svg?branch=master)](https://travis-ci.org/mshakya/metamer)
 [![codecov](https://codecov.io/gh/mshakya/metamer/branch/master/graph/badge.svg)](https://codecov.io/gh/mshakya/metamer)
 
-MetaMer is a workflow to cluster shotgun sequencing samples based on shared k-mers. 
+`metamer`` is a workflow to cluster sequencing samples (paired raw fastq reads or assemblies) based on shared k-mers. It currently uses mash to compute distance between samples. It is useful for binning metagenomes or any sequencing samples into cluster based on their similarity.
 
 
 # 0.0.0 DEPENDENCIES
@@ -51,8 +51,7 @@ source activate metamer_env
 Then clone the `metamer` repository.
 
 ```
-git clone https://github.com/mshakya/metamer.git
-
+git clone https://github.com/LANL-Bioinformatics/metamer
 ```
 
 Then change directory to `metamer` and install.
@@ -62,7 +61,7 @@ cd metamer
 python setup.py install
 ```
 
-If the installation is succesful, you should be able to type `metamer -h` and get a help message on how to use the tool.
+If the installation was succesful, you should be able to type `metamer -h` and get a help message on how to use the tool.
 
 ```
 metamer -h
@@ -79,7 +78,10 @@ metamer luigi.cfg
 
 # 2.0.0 HOW TO RUN METAMER?
 
-metamer requires a `luigi` config file. An example config file can be found [here](https://raw.githubusercontent.com/mshakya/metamer/master/luigi.cfg).
+`metamer` 
+
+
+`metamer` requires a `luigi` config file. An example config file can be found [here](https://raw.githubusercontent.com/mshakya/metamer/master/luigi.cfg).
 Make a copy of `luigi.cfg` and edit it with information pertinent to your analysis.
 
 After having a well annotated config file, metamer can be run by simply typing
