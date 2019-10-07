@@ -45,12 +45,12 @@ def plot_hclust(linkage):
 
 class ClusterSamples(Task):
     """luigi class for clustering mash distance."""
-    out_dir = Parameter()
+    out_folder = Parameter()
     threshold = Parameter()
     # dist_algo = Parameter()
 
     def requires(self):
-        dfile = os.path.join(self.out_dir, "mash_dist.txt")
+        dfile = os.path.join(self.out_folder, "mash_dist.txt")
         LocalTarget(dfile)
 
     def get_linkage(self):
@@ -59,7 +59,7 @@ class ClusterSamples(Task):
         name_to_id = defaultdict(functools.partial(next, itertools.count()))
 
         # open the file
-        mash_dist_file = os.path.join(self.out_dir, "mash_dist.txt")
+        mash_dist_file = os.path.join(self.out_folder, "mash_dist.txt")
         with open(mash_dist_file) as f:
             reader = csv.reader(f, delimiter="\t")
 
@@ -85,7 +85,7 @@ class ClusterSamples(Task):
                 idx_b = name_to_id[name_b]
                 dists[(idx_a, idx_b) if idx_a < idx_b else (idx_b, idx_a)] = dist
 
-        np.savetxt(os.path.join(self.out_dir, "dist.txt"),
+        np.savetxt(os.path.join(self.out_folder, "dist.txt"),
                    dists, delimiter=",")
 
         up_mat = np.triu(dists)
@@ -95,7 +95,7 @@ class ClusterSamples(Task):
 
     def parse_clusters(self, linkage, id_to_name, threshold):
         flat_clus = scipy.cluster.hierarchy.fcluster(linkage, criterion="distance", t=threshold)
-        cluster_file = os.path.join(self.out_dir, "clusters.txt")
+        cluster_file = os.path.join(self.out_folder, "clusters.txt")
         md = defaultdict(list)
         for cl, a in enumerate(flat_clus):
             md[a].append(id_to_name[cl].split("/")[-1])
@@ -105,7 +105,7 @@ class ClusterSamples(Task):
                 writer.writerow([cl, mem])
 
     def plot_linkage(self, linkage):
-        cluster_fig = os.path.join(self.out_dir, "clusters.png")
+        cluster_fig = os.path.join(self.out_folder, "clusters.png")
         fig = plt.figure()
         plt.figure(figsize=(25, 10))
         plt.title('Hierarchical Clustering Dendrogram')
@@ -125,5 +125,5 @@ class ClusterSamples(Task):
 
     def output(self):
         """output"""
-        mash_dist_file = os.path.join(self.out_dir, "clusters.txt")
+        mash_dist_file = os.path.join(self.out_folder, "clusters.txt")
         return LocalTarget(mash_dist_file)

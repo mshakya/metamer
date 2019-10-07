@@ -17,14 +17,14 @@ class CalculateDist(Task):
     sk1 = Parameter()
     sk2 = Parameter()
     threads = IntParameter()  # # of threads to trigger
-    out_dir = Parameter()  # files are copied and kept
+    out_folder = Parameter()  # files are copied and kept
 
     def requires(self):
         LocalTarget(self.sk1)
 
     def calc_dist(self):
         """calculate distance sketch"""
-        out_file = os.path.join(self.out_dir, "mash_dist.txt")
+        out_file = os.path.join(self.out_folder, "mash_dist.txt")
         if os.path.exists(out_file) is False:
             f = open(out_file, 'w')
             f.close()
@@ -44,22 +44,21 @@ class CalculateDist(Task):
 
     def output(self):
         """output"""
-        out_file = os.path.join(self.out_dir, "mash_dist.txt")
+        out_file = os.path.join(self.out_folder, "mash_dist.txt")
         return LocalTarget(out_file)
 
 
 class Alldist(luigi.WrapperTask):
     "Run all Comparisons"
-    data_folder = Parameter()  # folder that has sketch files
     threads = IntParameter()  # of threads to trigger
-    out_dir = Parameter()  # Folder that has outputs
+    out_folder = Parameter()  # Folder that has outputs
     mash_tool = Parameter()  # sourmash or mash
 
     def requires(self):
         """A wrapper for comparing sketches."""
-
-        sk_list = miscs.sk2list(os.path.join(self.data_folder, ".mash"))
+        mash_folder = os.path.join(self.out_folder, ".mash")
+        sk_list = miscs.sk2list(mash_folder)
         all_pairs = list(itertools.combinations(sk_list, 2))
         for pair in all_pairs:
             yield CalculateDist(sk1=pair[0], sk2=pair[1], threads=self.threads,
-                                out_dir=self.out_dir)
+                                out_folder=self.out_folder)

@@ -22,18 +22,17 @@ def test_CalculateDist(tmpdir):
 
     """
 
-    luigi.interface.build([faqcs.RunAllQC(fq_folder="tests/data/fqs",
-                                          out_dir="tests/dist_test",
+    luigi.interface.build([faqcs.RunAllQC(in_folder="tests/data/fqs",
+                                          out_folder="tests/dist_test",
                                           num_cpus=1,
                                           faqc_min_L=50,
                                           n_cutoff=4),
-                          sketch.AllSketches(fq_folder="tests/data/fqs",
+                          sketch.AllSketches(in_folder="tests/data/fqs",
                           kmer=31, threads=1, sketch=100,
-                          seed=2500, min_copy=2, out_dir="tests/dist_test",
+                          seed=2500, min_copy=2, out_folder="tests/dist_test",
                           mash_tool="mash")], local_scheduler=True, workers=1)
-    luigi.interface.build([dist.Alldist(data_folder="tests/dist_test",
-                                       threads=1,
-                                       out_dir="tests/dist_test",
+    luigi.interface.build([dist.Alldist(threads=1,
+                                       out_folder="tests/dist_test",
                                        mash_tool="mash")],
                                       local_scheduler=True, workers=1)
 
