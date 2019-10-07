@@ -65,14 +65,21 @@ def main():
     parser = cmdline_parser()
     args = parser.parse_args()
 
+    print("Running QC....")
     build([faqcs.RunAllQC()],local_scheduler=True, workers=1)
+    print("Done.\n")
 
+    print("Sketching.....")
     build([sketch.AllSketches()], local_scheduler=True, workers=1)
+    print("Done.\n")
 
+    print("Calculting distances...")
     build([dist.Alldist()], local_scheduler=True, workers=1)
+    print("Done.\n")
 
+    print("Clustering....")
     build([cluster.ClusterSamples()], local_scheduler=True, workers=1)
-
+    print("Done.\n")
 
 if __name__ == '__main__':
     main()
