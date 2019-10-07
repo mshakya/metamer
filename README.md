@@ -1,4 +1,4 @@
-# MetaMer
+# metamer
 [![Build Status](https://travis-ci.org/mshakya/metamer.svg?branch=master)](https://travis-ci.org/mshakya/metamer)
 [![codecov](https://codecov.io/gh/mshakya/metamer/branch/master/graph/badge.svg)](https://codecov.io/gh/mshakya/metamer)
 
@@ -42,6 +42,10 @@ After the installation, first create a conda environment and then install third 
 Third party tool dependencies can be installed using `conda`.
 
 ```
+conda config --add channels defaults
+conda config --add channels bioconda
+conda config --add channels conda-forge
+conda create --yes -n mash_env python=3.6.6
 conda create -n metamer_env
 conda install --yes -c bioconda mash=2.1.1 -n metamer_env
 conda install --yes -c bioconda faqcs -n metamer_env
