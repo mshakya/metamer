@@ -7,7 +7,7 @@ from plumbum.cmd import mash, cat, mv
 import sys
 import os
 import logging
-from metamer.miscs import f2dic
+from metamer.miscs import f2dic, fna2dic
 
 
 class CreateReadSketches(Task):
@@ -50,6 +50,43 @@ class CreateReadSketches(Task):
         self.sketch_pair()
 
 
+class CreateFastaSketches(Task):
+    """luigi class for creating sketches of fastq reads."""
+    kmer = IntParameter()  # k-mer size
+    threads = IntParameter()  # of threads to trigger
+    sketch = IntParameter()  # sketch size
+    seed = IntParameter()  # seed
+    min_copy = IntParameter()  # minimum occurence of k-mer to be included
+    mash_tool = Parameter()  # sourmash or mash
+    fasta = Parameter()
+    smp = Parameter()
+    out_dir = Parameter()
+
+    def output(self):
+        """to check if msh is present"""
+        return LocalTarget(os.path.join(self.out_dir, ".mash",
+                                        self.smp + ".msh"))
+
+    def sketch_pair(self):
+        """create sketch"""
+        logger = logging.getLogger('luigi-interface')  # setup logger
+        if os.path.exists(os.path.join(self.out_dir, ".mash")) is False:
+            os.makedirs(os.path.join(self.out_dir, ".mash"))
+
+        if self.mash_tool == "mash":
+            sketch_cmd = ["sketch", "-k", self.kmer, "-p", self.threads,
+                          "-s", self.sketch, "-S", self.seed,
+                          "-o", os.path.join(self.out_dir, ".mash", self.smp + ".msh"),
+                          self.fasta]
+        logger.info(mash[sketch_cmd]())
+        mash[sketch_cmd]()
+
+    def run(self):
+        """luigi run"""
+        # self.cat_pair()
+        self.sketch_pair()
+
+
 class AllSketches(WrapperTask):
     """ perform sketches on all samples"""
     fq_folder = Parameter()
@@ -64,7 +101,7 @@ class AllSketches(WrapperTask):
     def requires(self):
         """A wrapper for running sketches."""
         fq_dic = f2dic(self.fq_folder)
-        # fq_folder = os.path.join(self.out_dir, ".qcs")
+        fna_dic = fna2dic(self.fq_folder)
         if os.path.exists(self.out_dir) is False:
             os.mkdir(os.path.join(self.out_dir))
         for samp, fastq in fq_dic.items():
@@ -80,3 +117,19 @@ class AllSketches(WrapperTask):
                                      mash_tool="mash",
                                      read1=read1,
                                      read2=read2)
+        if len(fna_dic) > 0:
+            print("urshula")
+            print(fna_dic)
+            for samp, fna in fna_dic.items():
+                print("urshula")
+                print(samp)
+                print(fna)
+                yield CreateFastaSketches(smp=samp,
+                                          kmer=self.kmer,
+                                          threads=self.threads,
+                                          sketch=self.sketch,
+                                          seed=self.seed,
+                                          min_copy=self.min_copy,
+                                          out_dir=self.out_dir,
+                                          mash_tool="mash",
+                                          fasta=fna)
