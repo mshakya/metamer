@@ -70,22 +70,22 @@ class PairedRunQC(luigi.Task):
 class RunAllQC(luigi.WrapperTask):
     """Run all QC."""
 
-    fq_folder = Parameter()
-    out_dir = Parameter()
+    in_folder = Parameter()
+    out_folder = Parameter()
     num_cpus = IntParameter()
     faqc_min_L = IntParameter()
     n_cutoff = IntParameter()
 
     def requires(self):
         """A wrapper for running the QC."""
-        if os.path.exists(self.out_dir) is False:
-            os.makedirs(self.out_dir)
+        if os.path.exists(self.out_folder) is False:
+            os.makedirs(self.out_folder)
         fq_list = []
         fq_dic = {}
         regexp1 = re.compile(r'.*R[1-2]\.fastq')
         regexp2 = re.compile(r'.*R[1-2]\.fastq\.gz')
-        print(os.listdir(self.fq_folder))
-        for file in [os.path.abspath(os.path.join(self.fq_folder, x)) for x in os.listdir(self.fq_folder)]:
+        # print(os.listdir(self.in_folder))
+        for file in [os.path.abspath(os.path.join(self.in_folder, x)) for x in os.listdir(self.in_folder)]:
             if file.lower().endswith(".fastq") is True or str(file).lower().endswith(".fastq.gz") is True:
                 fq_list.append(file)
         for file in fq_list:
@@ -99,7 +99,7 @@ class RunAllQC(luigi.WrapperTask):
                 sys.exit("fastq file name should end with R[1-2].fastq or R[1-2].fastq.gz")
         for samp, fastq in fq_dic.items():
             fastq_sort = sorted(fastq)  # sort, so that R1 comes before R2
-            trim_dir = os.path.join(self.out_dir, "qcs", samp)
+            trim_dir = os.path.join(self.out_folder, ".qcs", samp)
             if os.path.isdir(trim_dir) is False:
                 os.makedirs(trim_dir)
             yield PairedRunQC(fastqs=fastq_sort,  # list of fastq files

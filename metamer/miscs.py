@@ -3,15 +3,16 @@
 
 import os
 import re
+import sys
 
 
-def f2dic(fq_folder):
+def f2dic(in_folder):
     "list of fastq in a folder to dictionary"
     fq_list = []
     fq_dic = {}
     regexp1 = re.compile(r'.*R[1-2]\.fastq')
     regexp2 = re.compile(r'.*R[1-2]\.fastq\.gz')
-    for file in [os.path.abspath(os.path.join(fq_folder, x)) for x in os.listdir(fq_folder)]:
+    for file in [os.path.abspath(os.path.join(in_folder, x)) for x in os.listdir(in_folder)]:
         if file.lower().endswith(".fastq") is True or str(file).lower().endswith(".fastq.gz") is True:
             fq_list.append(file)
     fq_list.sort()  # sort so that first element in the list is R1
@@ -27,6 +28,17 @@ def f2dic(fq_folder):
     return fq_dic
 
 
+def fna2dic(fna_folder):
+    "list of fasta file"
+    fna_list = []
+    fna_dic = {}
+    for file in [os.path.abspath(os.path.join(fna_folder, x)) for x in os.listdir(fna_folder)]:
+        if file.lower().endswith(".fna") is True or str(file).lower().endswith(".fna.gz") is True:
+            fna_list.append(file)
+    for file in fna_list:
+        fna_dic[(os.path.basename(file).split(".fna")[0])] = file
+    return fna_dic
+
 def sk2list(sk_folder):
     "list sketch files"
     sk_list = []
@@ -34,5 +46,5 @@ def sk2list(sk_folder):
     for file in [os.path.abspath(os.path.join(sk_folder, x)) for x in os.listdir(sk_folder)]:
         if file.lower().endswith(".msh") is True:
             sk_list.append(file)
-    sk_list.sort()  # sort so that first element in the list is R1
+    sk_list.sort()
     return sk_list

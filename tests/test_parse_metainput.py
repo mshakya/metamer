@@ -19,7 +19,6 @@ def test_parse_meta():
     """
 
     m_d = parse_metainput.parse_meta("tests/data/test_input.tab")
-    print(m_d)
     truth_dict = {'A': ['test_SRS104275_1.fastq', 'test_SRS104275_2.fastq'],
                   'B': ['test_SRS144382_1.fastq.gz', 'test_SRS144382_2.fastq.gz'],
                   'C': ['test_SRS149938_1.fastq', 'test_SRS149938_2.fastq']}

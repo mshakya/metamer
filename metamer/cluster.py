@@ -1,6 +1,8 @@
 import pandas as pd
 import scipy.cluster
+import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 from luigi import IntParameter, Parameter, ListParameter, LocalTarget, Task
 import os
 from collections import defaultdict
@@ -43,11 +45,12 @@ def plot_hclust(linkage):
 
 class ClusterSamples(Task):
     """luigi class for clustering mash distance."""
-    out_dir = Parameter()
+    out_folder = Parameter()
+    threshold = Parameter()
     # dist_algo = Parameter()
 
     def requires(self):
-        dfile = os.path.join(self.out_dir, "mash_dist.txt")
+        dfile = os.path.join(self.out_folder, "mash_dist.txt")
         LocalTarget(dfile)
 
     def get_linkage(self):
@@ -56,7 +59,7 @@ class ClusterSamples(Task):
         name_to_id = defaultdict(functools.partial(next, itertools.count()))
 
         # open the file
-        mash_dist_file = os.path.join(self.out_dir, "mash_dist.txt")
+        mash_dist_file = os.path.join(self.out_folder, "mash_dist.txt")
         with open(mash_dist_file) as f:
             reader = csv.reader(f, delimiter="\t")
 
@@ -82,7 +85,7 @@ class ClusterSamples(Task):
                 idx_b = name_to_id[name_b]
                 dists[(idx_a, idx_b) if idx_a < idx_b else (idx_b, idx_a)] = dist
 
-        np.savetxt(os.path.join(self.out_dir, "dist.txt"),
+        np.savetxt(os.path.join(self.out_folder, "dist.txt"),
                    dists, delimiter=",")
 
         up_mat = np.triu(dists)
@@ -90,19 +93,20 @@ class ClusterSamples(Task):
         id_to_name = dict((id, name) for name, id in name_to_id.items())
         return linkage, id_to_name
 
-    def parse_clusters(self, linkage, id_to_name):
-        flat_clus = scipy.cluster.hierarchy.fcluster(linkage, 0.9)
-        cluster_file = os.path.join(self.out_dir, "clusters.txt")
+    def parse_clusters(self, linkage, id_to_name, threshold):
+        flat_clus = scipy.cluster.hierarchy.fcluster(linkage, criterion="distance", t=threshold)
+        cluster_file = os.path.join(self.out_folder, "clusters.txt")
         md = defaultdict(list)
         for cl, a in enumerate(flat_clus):
             md[a].append(id_to_name[cl].split("/")[-1])
-        print(md)
         with open(cluster_file, 'w') as cl_file:
-            writer = csv.writer(cl_file)    
+            writer = csv.writer(cl_file)
             for cl, mem in md.items():
                 writer.writerow([cl, mem])
 
     def plot_linkage(self, linkage):
+        cluster_fig = os.path.join(self.out_folder, "clusters.png")
+        fig = plt.figure()
         plt.figure(figsize=(25, 10))
         plt.title('Hierarchical Clustering Dendrogram')
         plt.xlabel('sample index')
@@ -110,16 +114,16 @@ class ClusterSamples(Task):
         scipy.cluster.hierarchy.dendrogram(linkage,
                                            leaf_rotation=90.,  # rotates the x axis labels
                                            leaf_font_size=8.)  # font size for the x axis labels
-        plt_file = os.path.join(self.out_dir, "cluster.png")
-        plt.save()
+        plt_file = os.path.join(cluster_fig)
+        fig.savefig(plt_file)
 
     def run(self):
         """luigi run"""
         linkage, id_to_name = self.get_linkage()
-        self.parse_clusters(linkage, id_to_name)
-        # plot_linkage(linkage)
+        self.parse_clusters(linkage, id_to_name, self.threshold)
+        # self.plot_linkage(linkage)
 
     def output(self):
         """output"""
-        mash_dist_file = os.path.join(self.out_dir, "clusters.txt")
+        mash_dist_file = os.path.join(self.out_folder, "clusters.txt")
         return LocalTarget(mash_dist_file)

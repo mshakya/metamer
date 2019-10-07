@@ -15,6 +15,7 @@ bin_path = os.path.join(lib_path, 'bin')
 sys.path.append(lib_path)
 os.environ["PATH"] += os.pathsep + bin_path
 from metamer import sketch
+from metamer import faqcs
 from plumbum.cmd import cp
 
 
@@ -26,11 +27,16 @@ def test_CreateReadSketches():
 
     """
 
-    build([sketch.AllSketches(data_folder="tests/data/fqs",
+    build([faqcs.RunAllQC(in_folder="tests/data/fqs",
+                          out_folder="tests/sk_test",
+                          num_cpus=1,
+                          faqc_min_L=50,
+                          n_cutoff=4),
+           sketch.AllSketches(in_folder="tests/data/fqs",
                               kmer=31, threads=2, sketch=100,
-                              seed=2500, min_copy=2, out_dir="tests/sk_test",
+                              seed=2500, min_copy=2, out_folder="tests/sk_test",
                               mash_tool="mash")],
                           local_scheduler=True, workers=1)
-    file_exist = os.path.exists("tests/sk_test/SRR059451_.msh")
+    file_exist = os.path.exists("tests/sk_test/.mash/SRR059451_.msh")
     shutil.rmtree("tests/sk_test")
     assert file_exist is True
