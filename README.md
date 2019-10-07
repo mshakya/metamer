@@ -97,7 +97,6 @@ Set what tool to use for generating MinHash distance in `mash_tool`. Right now, 
 
 ```
 [DEFAULT]
-
 mash_tool = mash
 # directory where all files are copied and kept
 out_folder = tests/test_run
@@ -110,11 +109,9 @@ These are the parameters specific to `luigi`. Change log level to `DEBUG` if rep
 
 
 ```
-
 [core]
 log_level:ERROR
 scheduler_url:http://localhost:8082/
-
 ```
 
 Following parameters are running for Quality control using FaQCs. Please update the parameters if needed.
@@ -128,13 +125,11 @@ num_cpus = 2
 faqc_min_L = 50
 # Trimmed read has greater than or equal to this number of continuous base "N" will be discarded.
 n_cutoff = 10
-
 ```
 
-Following parameters are specific for `mash`. 
+Following parameters are specific for `mash`. Parameters for kmer and sketches could have the most effect.
 
 ```
-
 [AllSketches]
 in_folder = tests/data/fqs
 # k-mer size
@@ -148,12 +143,20 @@ seed = 439
 min_copy = 1
 ```
 
+Only need to set threads parameter for generating distance.
 
 ```
 [Alldist]
 # of threads to trigger
 threads = 2
+```
 
+Set the parameter for threshold to call clusters. Maximum distance betwen two points to be part of a same cluster.
+
+```
+[ClusterSamples]
+# maximum cophenetic distance between two points in a cluster
+threshold = 0.3
 ```
 
 For this step by step guide, we will use a small dataset that is packaged with this repo, so all the config file parameters are already set in the `luigi.cfg` file that is included in the repo.
@@ -211,17 +214,17 @@ and run
 metamer luigi.cfg
 ```
 
-All the parameters in `luigi.cfg` has already been set for this run. Also,if metamer is not in the path, then one can directly call the `metamer` from the `bin` folder using:
+All the parameters in `luigi.cfg` has already been set for this run. Also,if metamer is not in the path, users can directly call the `metamer` from the `bin` folder using:
 
 ```
 bin/metamer luigi.cfg
 ```
 
 
-# 1.1.3 OUTPUT
+### 1.1.3 OUTPUTS
 
 
-`metamer` outputs multiple files. The most important one being `clusters.txt`. It's a csv file that has name of the cluster in first column and sample names that belong to the cluster.
+`metamer` outputs multiple files. The most important one being `clusters.txt`. It's a csv file that has name of the cluster in first column and sample names that belong to the cluster. An example `clusters.txt` file.
 
 
 ```
