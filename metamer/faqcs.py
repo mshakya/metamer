@@ -84,6 +84,7 @@ class RunAllQC(luigi.WrapperTask):
         fq_dic = {}
         regexp1 = re.compile(r'.*R[1-2]\.fastq')
         regexp2 = re.compile(r'.*R[1-2]\.fastq\.gz')
+        regexp3 = re.compile(r'.*_[1-2]\.fastq\.gz')
         # print(os.listdir(self.in_folder))
         for file in [os.path.abspath(os.path.join(self.in_folder, x)) for x in os.listdir(self.in_folder)]:
             if file.lower().endswith(".fastq") is True or str(file).lower().endswith(".fastq.gz") is True:
@@ -93,6 +94,9 @@ class RunAllQC(luigi.WrapperTask):
                 samp_name = re.search('.*_', file).group(0).split("/")[-1]
                 fq_dic.setdefault(samp_name, []).append(str(file))
             elif any([regexp2.match(f) for f in fq_list]) is True:
+                samp_name = re.search('.*_', file).group(0).split("/")[-1]
+                fq_dic.setdefault(samp_name, []).append(str(file))
+            elif any([regexp3.match(f) for f in fq_list]) is True:
                 samp_name = re.search('.*_', file).group(0).split("/")[-1]
                 fq_dic.setdefault(samp_name, []).append(str(file))
             else:
