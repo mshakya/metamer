@@ -46,7 +46,6 @@ conda config --add channels defaults
 conda config --add channels bioconda
 conda config --add channels conda-forge
 conda create --yes -n metamer_env python=3.6.6
-conda create -n metamer_env
 conda install --yes -c bioconda mash=2.1.1 -n metamer_env
 conda install --yes -c bioconda faqcs -n metamer_env
 source activate metamer_env
